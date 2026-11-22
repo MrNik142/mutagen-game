@@ -102,7 +102,7 @@ dialog.map-open{width:min(94vw,730px)}
 .pause-glyph{display:flex;gap:4px}
 .pause-glyph::before,.pause-glyph::after{content:'';display:block;width:3px;height:13px;border-radius:1px;background:currentColor}
 .pause-dialog{width:min(90vw,310px)}
-.pause-dialog .dialog-body{gap:8px}
+.pause-dialog .dialog-body,.pause-volume{display:grid;gap:8px}
 .pause-dialog .dialog-body button{text-align:center}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 footer{justify-content:flex-end}
@@ -205,6 +205,16 @@ main>.screen{
 .battle-corner,.battle-pause{top:var(--hud-inset)}
 .battle-corner{left:var(--hud-inset)}
 .battle-pause{right:var(--hud-inset)}
+.loot-toast{
+  position:absolute;z-index:2;left:50%;bottom:var(--hud-inset);transform:translateX(-50%);
+  max-width:calc(100% - 20px);padding:6px 12px;border:1px solid #d9ac59;border-radius:6px;
+  background:#1c1728f2;color:#ffe5a4;font-size:.875rem;font-weight:750;text-align:center;pointer-events:none;
+  box-shadow:0 0 16px #e5ad5850;
+}
+@media(max-width:540px){
+  .report-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .report-actions [data-close]{grid-column:1/-1}
+}
 main>footer{margin:0;padding:5px 14px;background:#0a0d16}
 .telegram-miniapp main>footer{display:none}
 .in-mission main{grid-template-rows:minmax(0,1fr);padding:0;max-width:none}
@@ -246,9 +256,14 @@ dialog.report-open{width:min(94vw,690px)}
 .report-more{font-size:.85rem}
 .report-more summary{padding:6px 0;cursor:pointer}
 .report-more[open] summary{margin-bottom:4px}
-.report-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:8px 16px;border-top:1px solid var(--line)}
-.report-actions button,.report-rewards button{min-height:44px;padding:6px 8px}
+.report-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 16px;border-top:1px solid var(--line)}
+.report-actions button{min-height:44px;padding:6px 8px}
 .report-actions button{line-height:1.15}
+.volume-control{display:grid;gap:3px;padding:6px 10px;border:1px solid var(--line);border-radius:5px;background:#101625}
+.volume-caption{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.9rem}
+.volume-caption span{color:var(--muted);font-variant-numeric:tabular-nums}
+.volume-control input{width:100%;min-width:0;min-height:36px;margin:0;accent-color:var(--teal)}
+@media(pointer:coarse){.volume-control input{min-height:44px}}
 
 @media(max-width:900px),(pointer:coarse),(max-height:530px) and (orientation:landscape){
   dialog.tree-open{width:min(760px,calc(100% - 16px))}
@@ -294,8 +309,9 @@ dialog.report-open{width:min(94vw,690px)}
   .pause-dialog{width:min(480px,92vw)}
   .pause-dialog .dialog-body{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px 12px}
   .pause-dialog #retreat{grid-column:1/-1}
+  .pause-volume{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}
   .report-content{padding:8px 12px;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
-  .report-actions{grid-template-columns:repeat(4,minmax(0,1fr));padding:6px 12px}
+  .report-actions{padding:6px 12px}
 }
 </style>
 </head>
@@ -323,6 +339,7 @@ dialog.report-open{width:min(94vw,690px)}
     <canvas id="arena" width="576" height="252" aria-label="Автоматический бой. Здоровье отображается над бойцами."></canvas>
     <div class="battle-corner"><strong id="stage"></strong><span id="wave"></span></div>
     <button type="button" class="icon-button battle-pause" id="pause" aria-label="Пауза" aria-haspopup="dialog" aria-controls="pause-menu" title="Пауза (Esc)"><span class="pause-glyph" aria-hidden="true"></span></button>
+    <div id="loot-toast" class="loot-toast" role="status" hidden></div>
   </div>
   <div id="events" class="sr-only" role="status" aria-live="polite"></div>
   <div id="team-health" class="sr-only" aria-label="Здоровье отряда"></div>
@@ -335,8 +352,7 @@ dialog.report-open{width:min(94vw,690px)}
   <div class="dialog-body">
     <button type="button" class="primary" id="resume" autofocus>Продолжить</button>
     <button type="button" id="speed">Скорость ×1</button>
-    <button type="button" id="pause-music" data-sound="music" aria-label="Музыка" aria-pressed="false">Музыка выключена</button>
-    <button type="button" id="pause-effects" data-sound="effects" aria-label="Звуки эффектов" aria-pressed="true">Эффекты включены</button>
+    <div id="pause-volume" class="pause-volume"></div>
     <button type="button" id="retreat">Вернуться в ангар</button>
   </div>
 </dialog>
@@ -354,8 +370,10 @@ const W = arena.width, H = arena.height;
 hangar.scale(hangarArt.width/W,hangarArt.height/H);
 hangar.imageSmoothingQuality='high';
 const KEY = 'mutagen-shuttle-v1';
-const state = {mutagen:0,rate:0,slow:0,vitality:0,power:0,unlocked:1,loot:false,equipped:false,musicMuted:false,effectsMuted:false,
-  tankUnlocked:false,tankActive:false,guard:0,taunt:0,balanceVersion:0,recruited:{},activeHeroes:{},missionTiers:{},bossLoot:{},gear:{},...readSave()};
+const {musicMuted,effectsMuted,musicVolume,effectsVolume,...savedGame}=readSave();
+const state = {mutagen:0,rate:0,slow:0,vitality:0,power:0,unlocked:1,loot:false,equipped:false,
+  tankUnlocked:false,tankActive:false,guard:0,taunt:0,balanceVersion:0,recruited:{},activeHeroes:{},missionTiers:{},bossLoot:{},gear:{},...savedGame,
+  musicVolume:volumePercent(musicVolume,musicMuted?0:55),effectsVolume:volumePercent(effectsVolume,effectsMuted?0:40)};
 const difficulties = [
   {name:'Разведка',hp:1,damage:1,speed:0,reward:1,description:'Стаи догоняют стрелка и заходят с двух сторон.'},
   {name:'Блокада',hp:1.52,damage:1.34,speed:4,reward:2,description:'Дополнительные мутанты заходят с фланга. Кислотные лужи крупнее.'},
@@ -452,6 +470,10 @@ function activeHero(role){
 function gearOwned(index){
   return index===0?state.loot:!!state.bossLoot[index];
 }
+function grantBossLoot(index){
+  if(index===0) state.loot=true;
+  else state.bossLoot[index]=true;
+}
 function gearEquipped(index){
   return gearOwned(index)&&(index===0?state.equipped:!!state.gear[index]);
 }
@@ -483,7 +505,8 @@ const motionRate=1.12;
 const bodyPadding=8;
 const entry={x:38,y:152};
 const exit={x:538,y:152};
-const pace={hero:57,travel:238};
+const pace={hero:57,travel:238,loot:116};
+const postClearSpeed=.5;
 const lanes=[
   {x:214,y:103,w:56,h:17},
   {x:290,y:153,w:20,h:49},
@@ -605,6 +628,9 @@ let selectedDifficulty = state.unlocked;
 let selectedNode='rate';
 let lastFrame = 0;
 
+function volumePercent(value,fallback){
+  return Number.isFinite(value)?clamp(Math.round(value),0,100):fallback;
+}
 function readSave() {
   try { return JSON.parse(localStorage.getItem(KEY)) || {}; }
   catch { return {}; }
@@ -884,7 +910,7 @@ function start(difficulty,missionIndex=selectedMission) {
   const hp=110+state.vitality*17;
   const mission=missionData[missionIndex];
   run={room:0,wave:0,difficulty,mission,missionIndex,total:mission.rooms*3,enemies:[],shots:[],acid:[],pools:[],time:0,speed:1,seed:randomSeed(),phase:"enter",
-    paused:false,earned:0,bossDefeated:false,damageBuff:1,rateBuff:1,
+    paused:false,earned:0,mutagenDrops:[],mutagenLabels:[],bossLootDrop:null,bossDefeated:false,damageBuff:1,rateBuff:1,
     cleared:0,dodges:0,lowestHP:hp,damageTaken:0,firstDamageWave:null,lastDamageSource:null,accumulator:0,eventPriority:0,eventUntil:0,
     tankBlocked:0,tankStrikes:0,
     h:{x:157,y:159,max:hp,hp,dir:1,cd:0,boost:0,skill:2,flash:0,hit:0,dashReady:0,dashUntil:0},
@@ -941,6 +967,7 @@ function prepareSector(r) {
   r.lastEnemyHit=r.time;
   r.bossWaiting=final&&r.backups>0;
   survivors(r).forEach((actor,i)=>Object.assign(actor,entry,{y:entry.y+i*14,dir:1,evading:false,vx:0,vy:0}));
+  r.mutagenLabels=[];
   r.phase='enter';
 }
 function canSpawnEnemy(r,point){
@@ -1447,16 +1474,103 @@ function enemyTurn(r,e,dt) {
   if(e.kind==='leech') e.hp=Math.min(e.max,e.hp+Math.ceil(e.damage*.5));
   e.cd=e.kind==='fast'?1.05:1.28;
 }
+const dropScatterTime=.32;
+const sectorPickupTime=1.1;
+
+function scatterMutagen(r,enemy){
+  const pieces=Math.min(enemy.value,enemy.kind==='boss'?14:6);
+  const rotation=Math.random()*Math.PI*2;
+  for(let i=0;i<pieces;i++){
+    const angle=rotation+i*Math.PI*2/pieces;
+    const radius=8+Math.random()*(enemy.kind==='boss'?24:14);
+    const landing={
+      x:clamp(enemy.x+Math.cos(angle)*radius,35,W-35),
+      y:clamp(enemy.y+Math.sin(angle)*radius,71,H-25),
+    };
+    const blocked=obstruction(r.layout.obstacles,enemy,landing,2);
+    const travel=blocked?Math.max(0,blocked.progress-.08):1;
+    r.mutagenDrops.push({
+      x:enemy.x,y:enemy.y,originX:enemy.x,originY:enemy.y,
+      endX:enemy.x+(landing.x-enemy.x)*travel,endY:enemy.y+(landing.y-enemy.y)*travel,
+      height:8+Math.random()*7,lift:0,born:r.time,
+      value:Math.floor(enemy.value/pieces)+(i<enemy.value%pieces?1:0),
+    });
+  }
+}
+function bankMutagen(r,value){
+  if(!value) return;
+  r.earned+=value;
+  state.mutagen+=value;
+  save();
+}
+function gatherMutagen(r,dt,remaining=Infinity){
+  if(!r.mutagenDrops.length) return;
+  const team=survivors(r);
+  if(!team.length) return;
+  const collected=new Map();
+  r.mutagenDrops=r.mutagenDrops.filter(drop=>{
+    const age=r.time-drop.born;
+    if(age<dropScatterTime&&remaining>0){
+      const t=age/dropScatterTime;
+      const ease=1-(1-t)**2;
+      drop.x=drop.originX+(drop.endX-drop.originX)*ease;
+      drop.y=drop.originY+(drop.endY-drop.originY)*ease;
+      drop.lift=Math.sin(t*Math.PI)*drop.height;
+      return true;
+    }
+    if(drop.height){
+      drop.x=drop.endX;
+      drop.y=drop.endY;
+      drop.lift=0;
+      drop.height=0;
+    }
+    const target=nearest(team,drop);
+    const gap=distance(drop,target);
+    if(!drop.attracted&&remaining>.62&&
+      (gap>37||obstruction(r.layout.obstacles,drop,target))) return true;
+    drop.attracted=true;
+    const speed=Number.isFinite(remaining)?Math.max(255,gap/Math.max(dt,remaining)):205;
+    const step=speed*dt;
+    if(gap>Math.max(5,step)&&remaining>0){
+      drop.x+=(target.x-drop.x)*step/gap;
+      drop.y+=(target.y-drop.y)*step/gap;
+      return true;
+    }
+    collected.set(target,(collected.get(target)||0)+drop.value);
+    return false;
+  });
+  if(!collected.size) return;
+  let total=0;
+  for(const [actor,value] of collected){
+    total+=value;
+    const label=r.mutagenLabels.find(entry=>entry.actor===actor&&entry.expires-r.time>.4);
+    if(label) label.value+=value;
+    else r.mutagenLabels.push({actor,value,expires:r.time+.65});
+  }
+  bankMutagen(r,total);
+  playEffect('mutagen',collected.keys().next().value.x);
+}
 function removeDefeated(r) {
   const fallen=r.enemies.filter(e=>e.hp<=0);
   if(!fallen.length) return;
   for(const e of fallen) {
-    r.earned+=e.value;
-    state.mutagen+=e.value;
-    if(e.kind==='boss') r.bossDefeated=true;
+    scatterMutagen(r,e);
+    if(e.kind==='boss'){
+      r.bossDefeated=true;
+      if(!gearOwned(r.missionIndex)) r.bossLootDrop={x:e.x,y:e.y,born:r.time};
+    }
   }
   r.enemies=r.enemies.filter(e=>e.hp>0);
+}
+function pendingBossLoot(r){
+  return r.bossLootDrop&&!r.bossLootDrop.claimed?r.bossLootDrop:null;
+}
+function claimBossLoot(r,drop){
+  drop.claimed=true;
+  drop.toastUntil=r.time+2.8;
+  grantBossLoot(r.missionIndex);
   save();
+  playEffect('loot',drop.x);
 }
 function roomBonus(r) {
   const options=[
@@ -1472,9 +1586,16 @@ function roomBonus(r) {
 function advance(r) {
   r.cleared++;
   r.eventPriority=0;
-  r.phase='exit';
   r.acid=[];
   r.pools=[];
+  if(r.mutagenDrops.length||pendingBossLoot(r)){
+    r.phase='collect';
+    r.collectUntil=r.time+sectorPickupTime;
+    notify(pendingBossLoot(r)?'Сбор добычи':'Сбор мутагена','good');
+  } else openExit(r);
+}
+function openExit(r){
+  r.phase='exit';
   if(r.bossDefeated) notify('Босс повержен. Шлюз эвакуации открыт','good');
   else if(r.wave===3) roomBonus(r);
   else notify('Волна зачищена. Шлюз открыт','good');
@@ -1487,7 +1608,7 @@ function transition(r,dt){
     if(distance(actor,destination)<=1) continue;
     pending=true;
     actor.dir=destination.x>=actor.x?1:-1;
-    stepToward(r,actor,destination,leaving?pace.travel:190,dt);
+    stepToward(r,actor,destination,leaving?pace.travel*postClearSpeed:190,dt);
   }
   if(pending) return;
   if(!leaving){spawnWave(r);return;}
@@ -1505,7 +1626,26 @@ function tick(dt) {
   if(!r||r.paused||dt<=0) return;
   r.time+=dt;
   r.shots=r.shots.filter(s=>(s.life-=dt)>0);
-  if(r.phase==='fight'){
+  if(r.mutagenLabels.length) r.mutagenLabels=r.mutagenLabels.filter(label=>label.expires>r.time);
+  if(r.phase==='collect'){
+    const team=survivors(r);
+    const loot=pendingBossLoot(r);
+    const collector=loot?nearest(team,loot):null;
+    for(const actor of team){
+      const pickup=actor===collector?loot:nearest(r.mutagenDrops,actor);
+      if(!pickup) continue;
+      actor.dir=pickup.x>=actor.x?1:-1;
+      stepToward(r,actor,pickup,pace.loot*postClearSpeed,dt);
+    }
+    const remaining=r.collectUntil-r.time;
+    gatherMutagen(r,dt,remaining);
+    if(collector&&r.time-loot.born>=.72&&(remaining<=0||distance(collector,loot)<18)){
+      claimBossLoot(r,loot);
+    }
+    if(!r.mutagenDrops.length&&!pendingBossLoot(r)&&!(r.bossLootDrop?.toastUntil-r.time>2)){
+      openExit(r);
+    }
+  } else if(r.phase==='fight'){
     if(r.focus&&!r.enemies.includes(r.focus)) r.focus=null;
     if(!r.focus&&r.enemies.length&&r.time-r.lastEnemyHit>8) {
       r.focus=nearest(r.enemies,survivors(r)[0]);
@@ -1519,6 +1659,7 @@ function tick(dt) {
     r.enemies.forEach(enemy=>enemyTurn(r,enemy,dt));
     acidTurn(r,dt);
     if(!survivors(r).length){finish(false);return;}
+    gatherMutagen(r,dt);
     if(!r.enemies.length) nextFight(r);
   } else transition(r,dt);
   if(run) updateHUD();
@@ -1533,6 +1674,10 @@ function updateHUD() {
   const sector='Сектор '+(r.room*3+r.wave)+' / '+r.total;
   if(get('stage').textContent!==name) get('stage').textContent=name;
   if(get('wave').textContent!==sector) get('wave').textContent=sector;
+  const lootToast=get('loot-toast');
+  const rewardVisible=r.bossLootDrop?.toastUntil>r.time;
+  if(rewardVisible&&lootToast.hidden) lootToast.textContent='Получено · '+r.mission.reward;
+  lootToast.hidden=!rewardVisible;
   const health=roster(r).map(actor=>heroData[actorRole(r,actor)].name+' '+Math.ceil(actor.hp)+'/'+actor.max).join(', ');
   const summary=get('team-health');
   if(summary.textContent!==health) summary.textContent=health;
@@ -1573,7 +1718,8 @@ function paintActor(e,r){
   const isHero=e===r.h;
   const tank=e===r.tank;
   const boss=e.kind==='boss';
-  const stepping=e.moving&&Math.floor(r.time*12)%2===1;
+  const strideRate=12*(r.phase==='collect'||r.phase==='exit'?postClearSpeed:1);
+  const stepping=e.moving&&Math.floor(r.time*strideRate)%2===1;
   const art=enemyArt[e.kind]||boss&&enemyArt.boss;
   const ally=e.role&&heroData[e.role];
   const height=boss?66:e.kind==='armor'?40:31;
@@ -1622,6 +1768,75 @@ function paintTeamHealth(r){
     if(role==='rifle'&&actor.boost>0) fill(ctx,x,y-3,width*actor.boost/5,1,'#ffd589');
   }
 }
+// Carbine, armor, blade, resonator, and capsule, in campaign order.
+const bossLootIcons=[
+  ['     ##','    ###','   ### ','#####  ','###    ',' #     '],
+  ['##   ##','#######','#######',' ##### ',' ## ## ','  ###  '],
+  ['     ##','    ###','   ### ','# ###  ',' ###   ','###    ','# #    '],
+  [' #   # ','### ###',' ######','  ###  ',' ####  ','#   ###','     # '],
+  ['  ###  ',' ##### ',' ## ## ',' ## ## ',' ## ## ',' ##### ','  ###  '],
+];
+function paintBossLoot(r){
+  const loot=pendingBossLoot(r);
+  if(!loot) return;
+  const age=r.time-loot.born;
+  const bounce=age<.48?Math.sin(age/.48*Math.PI)*19:0;
+  const y=loot.y-9-bounce-Math.sin(age*5)*2;
+  const pulse=.58+Math.sin(age*7)*.2;
+  ctx.save();
+  ctx.globalAlpha=pulse;
+  fill(ctx,loot.x-12,loot.y-41,24,39,'#ffd48630');
+  fill(ctx,loot.x-5,loot.y-53,10,52,'#f9bd674e');
+  for(let i=0;i<4;i++){
+    const angle=i*Math.PI/2+age*1.7;
+    fill(ctx,loot.x+Math.cos(angle)*14,y+Math.sin(angle)*12,2,2,'#ffdf94');
+  }
+  ctx.globalAlpha=1;
+  fill(ctx,loot.x-9,loot.y+1,18,3,'#17141b');
+  ctx.shadowColor='#ffd477';
+  ctx.shadowBlur=9;
+  fill(ctx,loot.x-10,y-9,20,19,'#272039');
+  ctx.shadowBlur=0;
+  fill(ctx,loot.x-7,y-10,14,1,'#ffde8b');
+  fill(ctx,loot.x-7,y+10,14,1,'#ffde8b');
+  bossLootIcons[r.missionIndex].forEach((row,dy)=>{
+    for(let dx=0;dx<row.length;dx++){
+      if(row[dx]==='#') fill(ctx,loot.x-7+dx*2,y-6+dy*2,2,2,dy<2?'#fff0b6':r.mission.tint);
+    }
+  });
+  ctx.restore();
+}
+function paintMutagenDrops(r){
+  for(const drop of r.mutagenDrops){
+    const {x,y,lift}=drop;
+    const bright=Math.sin(r.time*9+x)>.1;
+    if(!drop.attracted){
+      fill(ctx,x-3,y+2,6,2,'#111b2a99');
+      fill(ctx,x-4,y-lift-4,8,8,'#91ff6034');
+    }
+    fill(ctx,x-2,y-lift-3,4,6,'#286841');
+    fill(ctx,x-3,y-lift-1,6,2,'#41ac65');
+    fill(ctx,x-2,y-lift-2,4,4,bright?'#c6fa7b':'#8ce260');
+    fill(ctx,x-1,y-lift-2,2,2,'#efffa7');
+  }
+}
+function paintMutagenLabels(r){
+  if(!r.mutagenLabels.length) return;
+  ctx.save();
+  ctx.font='bold 10px system-ui,sans-serif';
+  ctx.textAlign='center';
+  ctx.lineWidth=3;
+  ctx.strokeStyle='#10231d';
+  ctx.fillStyle='#d6ffa0';
+  for(const label of r.mutagenLabels){
+    const remaining=label.expires-r.time;
+    const y=Math.max(18,label.actor.y-48-14*(.65-remaining)/.65);
+    ctx.globalAlpha=Math.min(1,remaining/.18);
+    ctx.strokeText('+'+label.value,label.actor.x,y);
+    ctx.fillText('+'+label.value,label.actor.x,y);
+  }
+  ctx.restore();
+}
 function paintArena(r) {
   if(hasBackground) ctx.clearRect(0,0,W,H);
   else floor(ctx);
@@ -1664,6 +1879,8 @@ function paintArena(r) {
     }
   }
   paintAcid(r);
+  paintMutagenDrops(r);
+  paintBossLoot(r);
   const layers=[
     ...[...survivors(r),...r.enemies].map(actor=>({y:actor.y,actor})),
     ...r.layout.obstacles.map(o=>({y:o.y+o.h,obstacle:o})),
@@ -1690,6 +1907,7 @@ function paintArena(r) {
     fill(ctx,shot.x-2,shot.y-2,4,4,'#fff0bd');
   }
   paintTeamHealth(r);
+  paintMutagenLabels(r);
   if(r.phase==='enter'){
     ctx.globalAlpha=Math.max(0,1-(survivors(r)[0].x-entry.x)/53)*.8;
     fill(ctx,0,0,W,H,'#090d15');
@@ -1755,12 +1973,11 @@ function finish(won,retreated=false) {
   if(!run) return;
   const r=run;
   const next=r.missionIndex+1;
-  const newLoot=won&&!gearOwned(r.missionIndex);
+  const newLoot=won&&(r.bossLootDrop?.claimed||!gearOwned(r.missionIndex));
   const newMission=won&&next===state.missionUnlocked&&next<missionData.length;
   const newDifficulty=won&&r.difficulty===highestDifficulty(r.missionIndex)&&r.difficulty<difficulties.length;
   if(won) {
-    if(r.missionIndex===0) state.loot=true;
-    else state.bossLoot[r.missionIndex]=true;
+    grantBossLoot(r.missionIndex);
     if(newMission) state.missionUnlocked++;
     if(newDifficulty){
       if(r.missionIndex===0) state.unlocked=r.difficulty+1;
@@ -1777,18 +1994,17 @@ function finish(won,retreated=false) {
   const statList=stat('+'+r.earned,'Мутаген')+stat(r.cleared+'/'+r.total,'Волны')
     +stat(formatTime(Math.ceil(r.time)),'Время');
   const reward=newLoot?'<div class="card reward"><strong>'+r.mission.reward+'</strong><p>'+r.mission.effect+
-    '</p><button data-gear="'+r.missionIndex+'">Экипировать добычу</button></div>':'';
+    '</p></div>':'';
   const unlock=(newMission?'<li>Открыта миссия «'+missionData[next].name+'»</li>':'')
     +(newDifficulty?'<li>Открыта сложность «'+difficultyName(r.difficulty+1)+'»</li>':'');
   const setback=!won&&!retreated&&r.lastDamageSource?'<p>Последний удар — '+damageNames[r.lastDamageSource]+
     '. Первый урон на волне '+r.firstDamageWave+'.</p>':'';
   const tankReport=r.tank?'<p>Танк поглотил '+r.tankBlocked+' урона и нанёс '+r.tankStrikes+
     ' ударов по области'+(r.tank.hp>0?'':'. Пал в бою')+'.</p>':'';
-  const replay='<button data-replay="'+r.difficulty+'" data-replay-mission="'+r.missionIndex+'">Повторить вылазку</button>';
-  const upgrade='<button'+(won?'':' class="primary"')+' data-panel="tech">К прокачке</button>';
+  const replay='<button'+(won?'':' class="primary"')+' data-replay="'+r.difficulty+'" data-replay-mission="'+r.missionIndex+'">Повторить вылазку</button>';
   const onward='<button'+(won?' class="primary"':'')+(newMission?' data-mission="'+next+'">Следующая миссия':
     ' data-panel="map">К карте')+'</button>';
-  const actions=won?[onward,upgrade,replay]:[upgrade,replay,onward];
+  const actions=won?[onward,replay]:[replay,onward];
   show(title,'<div class="report-content"><div class="report-summary"><p>'+r.mission.name+' · '+difficultyName(r.difficulty)+
     '</p><dl class="report-stats">'+statList+'</dl>'+(record&&record!=='Район зачищен'?'<p>'+record+'</p>':'')+
     '</div><div class="report-rewards">'+reward+(unlock?'<ul class="report-unlocks">'+unlock+'</ul>':'')+
@@ -1966,9 +2182,7 @@ function showPanel(name){
   if(name==='gear') show('Оружейный шкаф',locker());
   if(name==='map') selectMission();
   if(name==='settings'){
-    show('Настройки','<button type="button" id="settings-music" data-sound="music" aria-label="Музыка"></button>'+
-      '<button type="button" id="settings-effects" data-sound="effects" aria-label="Звуки эффектов"></button>');
-    updateSoundSettings();
+    show('Настройки',volumeControls('settings'));
   }
 }
 
@@ -1998,8 +2212,11 @@ function nextBattleTrack(){
   return lastBattleTrack;
 }
 function syncMusic(){
-  soundtrack.volume=run?.paused ? .24 : run ? .55 : .47;
-  if(!musicReady||state.musicMuted||!appVisible()){
+  const mix=run?.paused ? .44 : run ? 1 : .855;
+  const volume=state.musicVolume/100*mix;
+  if(musicBus) musicBus.gain.value=volume;
+  else soundtrack.volume=volume;
+  if(!musicReady||state.musicVolume===0||!appVisible()){
     soundtrack.pause();
     return;
   }
@@ -2016,26 +2233,38 @@ function setMusicTrack(name){
   musicTrack=name;
   syncMusic();
 }
-function updateSoundSettings(){
-  for(const [key,active,enabled,disabled] of [
-    ['music',!state.musicMuted,'Музыка включена','Музыка выключена'],
-    ['effects',!state.effectsMuted,'Эффекты включены','Эффекты выключены']
-  ]){
-    for(const prefix of ['pause-','settings-']){
-      const button=get(prefix+key);
-      if(button){
-        button.setAttribute('aria-pressed',String(active));
-        button.textContent=active?enabled:disabled;
-      }
-    }
-  }
+const volumeChannels={musicVolume:'Музыка',effectsVolume:'Звуки эффектов'};
+function volumeControls(prefix){
+  return Object.entries(volumeChannels).map(([channel,label])=>{
+    const id=prefix+'-'+channel;
+    const value=state[channel];
+    return '<label class="volume-control" for="'+id+'"><span class="volume-caption">'+label+
+      '<span id="'+id+'-value" aria-hidden="true">'+value+'%</span></span>'+
+      '<input id="'+id+'" type="range" min="0" max="100" value="'+value+'" data-volume="'+channel+'"></label>';
+  }).join('');
 }
-function toggleMusic(){
-  if(musicReady||state.musicMuted) state.musicMuted=!state.musicMuted;
-  musicReady=true;
+function setVolume(input){
+  const channel=input.dataset.volume;
+  if(!Object.hasOwn(volumeChannels,channel)) return;
+  const value=volumePercent(input.valueAsNumber,state[channel]);
+  if(value===state[channel]) return;
+  state[channel]=value;
+  for(const prefix of ['pause','settings']){
+    const id=prefix+'-'+channel;
+    const control=get(id);
+    if(!control) continue;
+    if(control!==input) control.value=String(value);
+    get(id+'-value').textContent=value+'%';
+  }
+  if(channel==='musicVolume'){
+    unlockAudio();
+    musicReady=true;
+    syncMusic();
+  } else if(effectsBus){
+    effectsBus.gain.value=effectsGain();
+    if(!value) silenceEffects();
+  }
   save();
-  updateSoundSettings();
-  syncMusic();
 }
 soundtrack.addEventListener('ended',()=>{
   if(run) setMusicTrack(nextBattleTrack());
@@ -2068,6 +2297,8 @@ const soundEffects={
   orbBurst:{interval:.17,priority:2,level:.66,layers:[tone(405,103,.17,.79,'fm'),noise(4300,.08,.75)]},
   chargeCue:{interval:.23,priority:2,level:.61,layers:[tone(110,165,.21,.80,'pulse'),tone(171,224,.105,.44,'triangle',.10)]},
   chargeHit:{interval:.24,priority:2,level:.78,layers:[tone(168,49,.22,.92,'triangle'),noise(1300,.13,.65),tone(280,110,.1,.42,'pulse')]},
+  loot:{interval:.4,priority:3,level:.52,layers:[tone(510,560,.11,.8,'triangle'),tone(740,815,.17,.6,'sine',.08),tone(980,1120,.2,.48,'sine',.16)]},
+  mutagen:{interval:.14,priority:1,level:.4,layers:[tone(620,760,.075,.72,'sine'),tone(870,1050,.06,.36,'triangle',.035)]},
   bossCue:{interval:.30,priority:3,level:.71,layers:[tone(73,125,.28,.92,'pulse'),noise(680,.24,.5,.02)]},
   bossSlam:{interval:.28,priority:3,level:1,layers:[tone(83,32,.29,.96,'sine'),noise(510,.24,.74),tone(183,53,.14,.55,'fm')]},
   bossCall:{interval:.35,priority:3,level:.74,layers:[tone(119,235,.27,.8,'fm'),tone(171,112,.23,.72,'pulse',.12),noise(860,.23,.42,.015)]},
@@ -2079,16 +2310,17 @@ const effectTimes=new Map();
 const effectVoiceLimit=5;
 let effectsContext;
 let effectsBus;
+let musicBus;
+const effectsGain=()=>.135*state.effectsVolume/40;
 
-function unlockEffects(){
-  if(state.effectsMuted) return;
+function unlockAudio(){
   const Audio=globalThis.AudioContext||globalThis.webkitAudioContext;
   if(!Audio) return;
   try {
     if(!effectsContext){
       effectsContext=new Audio();
       effectsBus=effectsContext.createGain();
-      effectsBus.gain.value=.135;
+      effectsBus.gain.value=effectsGain();
       const compressor=effectsContext.createDynamicsCompressor();
       compressor.threshold.value=-22;
       compressor.knee.value=15;
@@ -2100,8 +2332,20 @@ function unlockEffects(){
     }
     if(effectsContext.state!=='running') effectsContext.resume().catch(()=>{});
   } catch {
-    effectsContext=undefined;
-    effectsBus=undefined;
+    return;
+  }
+  if(!musicBus&&effectsContext.createMediaElementSource){
+    // The Web Audio gain also controls music in iOS WebViews.
+    try {
+      const bus=effectsContext.createGain();
+      bus.connect(effectsContext.destination);
+      effectsContext.createMediaElementSource(soundtrack).connect(bus);
+      musicBus=bus;
+      soundtrack.volume=1;
+      syncMusic();
+    } catch {
+      // Use the media element volume when its audio cannot be routed.
+    }
   }
 }
 function synthesizeEffect(name,definition){
@@ -2167,7 +2411,7 @@ function silenceEffects(){
   effectTimes.clear();
 }
 function playEffect(name,x,pitch=1){
-  if(state.effectsMuted||!run||run.paused||!appVisible()||effectsContext?.state!=='running') return;
+  if(!state.effectsVolume||!run||run.paused||!appVisible()||effectsContext?.state!=='running') return;
   const effect=soundEffects[name];
   if(!effect) return;
   const now=effectsContext.currentTime;
@@ -2195,14 +2439,6 @@ function playEffect(name,x,pitch=1){
   effectTimes.set(name,now);
   source.start(now);
 }
-function toggleEffects(){
-  state.effectsMuted=!state.effectsMuted;
-  if(state.effectsMuted) silenceEffects();
-  else unlockEffects();
-  save();
-  updateSoundSettings();
-}
-
 let telegramApp=null;
 let telegramActive=true;
 let telegramBattleMode=null;
@@ -2302,12 +2538,14 @@ document.addEventListener('keydown',event=>{
   }
 });
 
+document.addEventListener('input',event=>{
+  if(event.target.dataset?.volume) setVolume(event.target);
+});
+
 document.addEventListener('click',event=>{
   const button=event.target.closest('button');
   if(!button) return;
-  if(button.dataset.sound==='music'){toggleMusic();return;}
-  if(button.dataset.sound==='effects'){toggleEffects();return;}
-  if(run||button.hasAttribute('data-launch')||button.dataset.replay) unlockEffects();
+  if(!musicReady||run||button.hasAttribute('data-launch')||button.dataset.replay) unlockAudio();
   if(!musicReady){
     musicReady=true;
     syncMusic();
@@ -2363,8 +2601,7 @@ document.addEventListener('click',event=>{
       if(index===0) state.equipped=true;
       else state.gear[index]=!state.gear[index];
       save();
-      if(panel==='gear') showPanel('gear');
-      else {button.textContent='Экипировано';button.disabled=true;}
+      showPanel('gear');
     }
   }
   if(button.dataset.replay) start(Number(button.dataset.replay),Number(button.dataset.replayMission));
@@ -2379,12 +2616,14 @@ document.addEventListener('click',event=>{
   }
   if(button.id==='retreat'&&run?.paused) {
     const won=run.bossDefeated&&run.cleared===run.total;
-    if(won) finish(true);
-    else returnToHangar();
+    if(won){
+      gatherMutagen(run,1/60,0);
+      finish(true);
+    } else returnToHangar();
   }
 });
 save();
-updateSoundSettings();
+get('pause-volume').innerHTML=volumeControls('pause');
 paintHangar();
 startClientIntegration();
 requestAnimationFrame(frame);
