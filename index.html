@@ -27,12 +27,10 @@
 header,main{max-width:1220px;margin:auto;padding-inline:clamp(14px,3vw,36px)}header{padding-block:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}h1,h2,p{margin:0}h1{font:900 clamp(1.25rem,4vw,2rem)/1.1 system-ui;letter-spacing:.15em}.ship{color:var(--muted);font-size:.875rem;margin-top:5px}.money{color:var(--lime);background:#19251d;border:1px solid #456147;padding:.55rem .8rem;white-space:nowrap;border-radius:5px}.screen{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#182435}canvas{display:block;width:100%;height:auto;image-rendering:pixelated}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-block:14px 24px;color:var(--muted);font-size:.875rem}footer a{color:var(--teal)}
 dialog{width:min(94vw,570px);max-height:90vh;overflow:auto;padding:0;background:var(--panel);border:1px solid #607598;border-radius:8px;color:var(--ink);box-shadow:0 20px 80px #000b}dialog::backdrop{background:#02050cb5}.dialog-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);gap:12px}.dialog-head h2{font-size:1.4rem}.dialog-head button{padding:.35rem .65rem}.dialog-body{display:grid;gap:14px;padding:20px}.dialog-body p,.sub{color:var(--muted);line-height:1.5}.card{display:grid;gap:6px;padding:12px;border:1px solid var(--line);background:#101625;border-radius:5px}.card button{justify-self:start;margin-top:3px}.planet{display:grid;place-items:center;min-height:168px;background:radial-gradient(circle at 28% 30%,#c0d9f1 0 1px,transparent 2px),radial-gradient(circle at 80% 60%,#bad1e8 0 1px,transparent 2px),radial-gradient(circle at 50% 50%,#364c73,#121a2c 45%,#0a1020 70%);border:1px solid var(--line);border-radius:5px}.planet button{width:142px;height:142px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#466979,#2c465d 40%,#25324a 70%);border:2px solid #698b99;box-shadow:0 0 24px #6cbde24f}.planet span{display:block;color:var(--lime);font-size:1.3rem}.difficulty{display:grid;gap:8px}
 @media(max-width:540px){.dialog-body{padding:14px}}
-.debrief-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.debrief-grid .card{gap:2px}.debrief-grid strong{font-size:1.2rem}.debrief-grid span{color:var(--muted);font-size:.875rem}.debrief-result{color:var(--lime)!important}.reward{border-color:#6f8951;background:#1b2923}.difficulty .lineup{color:#b9d7f3}
+.reward{border-color:#6f8951;background:#1b2923}.difficulty .lineup{color:#b9d7f3}
 dialog.tree-open{width:min(1160px,96vw)}
 .tree-open .dialog-head{background:#171e30}
 .tree-open .dialog-body{padding:0;gap:0}
-.tree-intro{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line)}
-.tree-intro p{font-size:.9rem}
 .tree-balance{color:var(--lime);white-space:nowrap}
 .tree-scroll{overflow:auto;overscroll-behavior-inline:contain;padding:14px 18px 20px;background-color:#101522;background-image:radial-gradient(#53658244 1px,transparent 1px);background-size:18px 18px}
 .tree-graph{min-width:850px}
@@ -86,7 +84,6 @@ dialog.map-open{width:min(94vw,730px)}
 }
 @media(prefers-reduced-motion:reduce){.planet-map .planet-marker{transition:none}}
 
-@media(max-width:600px){.tree-intro{align-items:flex-start}.tree-detail,.tree-intro{padding-inline:12px}.tree-scroll{padding-inline:10px}.tree-graph{min-width:790px}}
 
 .header-actions{display:flex;align-items:center;gap:8px}
 .icon-button{display:grid;place-items:center;position:relative;width:40px;height:40px;padding:0;color:#e7f3ff;background:#101827e8;border:1px solid #516684;border-radius:7px}
@@ -131,7 +128,7 @@ dialog{
   inset:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
   overscroll-behavior:contain;
 }
-#dialog .dialog-head{position:sticky;top:0;z-index:5;background:#161c2d}
+#dialog .dialog-head{background:#161c2d}
 .telegram-miniapp #download{display:none}
 .telegram-miniapp footer{margin-bottom:0}
 .scene-touch-caption,.tree-tabs{display:none}
@@ -146,22 +143,6 @@ dialog{
     font-size:clamp(.68rem,2.6vw,.8rem);line-height:1.2;white-space:nowrap;pointer-events:none;
   }
 }
-@media(max-width:740px){
-  .tree-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line)}
-  .tree-tab{flex:1 1 27%;min-height:44px;padding:.35rem .4rem;font-size:.83rem}
-  .tree-tab[aria-pressed=true]{border-color:#9ddce9;background:#21405a}
-  .tree-root,.tree-grid::before,.tree-grid::after{display:none}
-  .tree-graph{min-width:0}
-  .tree-scroll{padding:10px 12px 13px}
-  .tree-grid{display:block;margin:0}
-  .tree-branch{display:none;padding-top:0}
-  .tree-branch.active-branch{display:block}
-  .tree-branch::before{content:none}
-  .tree-node{min-height:51px}
-  .tree-node.root-hero{min-height:49px}
-  .tree-children{gap:7px;padding-top:13px}
-  .tree-detail{padding:11px 12px 14px}
-}
 @media(max-width:380px){
   header,main{padding-inline:9px}
   .ship{font-size:.75rem}
@@ -169,12 +150,146 @@ dialog{
   .header-actions{gap:5px}
   .battle-corner{max-width:calc(100% - 60px)}
 }
-@media(max-height:480px) and (orientation:landscape){
-  .in-mission main{max-width:min(1220px,calc((100vh - var(--safe-top) - var(--safe-bottom) - 18px)*2.28))}
-  .in-mission main{max-width:min(1220px,calc((100dvh - var(--safe-top) - var(--safe-bottom) - 18px)*2.28))}
-  .in-mission main{padding-top:5px}
+/* The art and its hotspots share a single coordinate system. */
+body{
+  height:100vh;
+  height:100dvh;
+  display:grid;
+  grid-template-rows:minmax(0,1fr);
 }
+body>header{
+  position:absolute;
+  z-index:2;
+  top:var(--safe-top);
+  left:var(--safe-left);
+  right:var(--safe-right);
+  max-width:none;
+  margin:0;
+  background:linear-gradient(#080c16ee,#080c1699 72%,transparent);
+}
+body>main{
+  width:100%;
+  height:100%;
+  min-width:0;
+  max-width:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  grid-template-rows:minmax(0,1fr) auto;
+}
+main>.screen{
+  display:grid;
+  place-items:center;
+  container-type:size;
+  grid-template-columns:minmax(0,1fr);
+  border:0;
+  border-radius:0;
+  min-height:0;
+  background:radial-gradient(ellipse at center,#232e45,#0a0d16 80%);
+}
+.hangar-wrap{
+  width:100%;
+  width:max(100cqw,min(135cqw,228.57cqh));
+  /* Keep the center of the art fixed even when its edges are cropped. */
+  justify-self:center;
+}
+.hangar-wrap canvas{width:100%;height:auto}
+#arena{width:min(100cqw,228.57cqh)}
+.battle-corner,.battle-pause{top:clamp(5px,1.5cqh,14px)}
+.battle-corner{left:clamp(5px,1.5cqw,16px)}
+.battle-pause{right:clamp(5px,1.5cqw,16px)}
+main>footer{margin:0;padding:5px 14px;background:#0a0d16}
+.telegram-miniapp main>footer{display:none}
+.in-mission main{grid-template-rows:minmax(0,1fr);padding:0;max-width:none}
 
+dialog[open]{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+dialog .dialog-head{position:static;flex:none;padding:8px 16px;min-height:52px}
+dialog .dialog-head h2{font-size:clamp(1rem,2.8vw,1.4rem)}
+dialog .dialog-head button{min-width:40px;min-height:40px;font-size:1.25rem;line-height:1}
+dialog .dialog-body{
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.dialog-head .tree-balance{margin-left:auto;font-size:.875rem}
+
+dialog.report-open{width:min(94vw,690px)}
+#dialog.report-open .dialog-body{display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden;scrollbar-gutter:auto}
+.report-content{
+  display:grid;
+  gap:12px;
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:14px 16px;
+}
+.report-summary,.report-rewards{display:grid;align-content:start;gap:8px;min-width:0}
+.report-summary>p{font-size:.875rem}
+.report-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0}
+.report-stats>div{padding:8px;border:1px solid var(--line);border-radius:6px;background:#101625}
+.report-stats>div:first-child{color:var(--lime);border-color:#526b43;background:#19251d}
+.report-stats dt{font-size:.75rem;color:var(--muted)}
+.report-stats dd{margin:0;font-size:1.18rem;font-weight:750;font-variant-numeric:tabular-nums}
+.report-unlocks{padding-left:18px;margin:0;color:var(--lime);font-size:.875rem}
+.report-more{font-size:.85rem}
+.report-more summary{padding:6px 0;cursor:pointer}
+.report-more[open] summary{margin-bottom:4px}
+.report-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:8px 16px;border-top:1px solid var(--line)}
+.report-actions button,.report-rewards button{min-height:44px;padding:6px 8px}
+.report-actions button{line-height:1.15}
+
+@media(max-width:900px),(pointer:coarse),(max-height:530px) and (orientation:landscape){
+  dialog.tree-open{width:min(760px,calc(100% - 16px))}
+  .tree-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line)}
+  .tree-tab{flex:1 1 27%;min-height:44px;padding:4px;font-size:.875rem}
+  .tree-tab[aria-pressed=true]{border-color:#9ddce9;background:#21405a}
+  .tree-root,.tree-grid::before,.tree-grid::after{display:none}
+  .tree-graph{min-width:0}
+  .tree-scroll{padding:10px 12px}
+  .tree-grid{display:block;margin:0}
+  .tree-branch{display:none;padding-top:0}
+  .tree-branch.active-branch{display:block}
+  .tree-branch::before{content:none}
+  .tree-node,.tree-node.root-hero{min-height:48px}
+  .tree-children{gap:7px;padding-top:13px}
+  .tree-detail{padding:10px 12px 14px}
+  .tree-detail button,.difficulty button,.difficulty select,.card button{min-height:44px}
+}
+@media(max-width:540px) and (orientation:portrait){
+  .hangar-wrap{width:100cqw}
+}
+@media(max-height:530px) and (orientation:landscape){
+  body:not(.in-mission){grid-template-rows:auto minmax(0,1fr)}
+  body>header{position:relative;inset:auto;padding-block:4px;background:#0a0d16}
+  header .ship{display:none}
+  .hangar-wrap{width:min(100cqw,275cqh)}
+  dialog[open]{max-height:calc(min(100dvh,var(--tg-viewport-stable-height,100dvh)) - var(--safe-top) - var(--safe-bottom) - 8px)}
+  .map-open .dialog-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;padding:10px 12px}
+  .difficulty{gap:5px}
+  .difficulty p{font-size:.875rem;line-height:1.25}
+  dialog.tree-open[open]{height:100dvh}
+  .tree-open .dialog-body{
+    grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+    overflow:hidden;
+    scrollbar-gutter:auto;
+  }
+  .tree-tabs{grid-column:1/-1;padding:4px 10px}
+  .tree-tab{flex:1 1 0;min-width:0;overflow-wrap:anywhere}
+  .tree-detail,.tree-scroll{overflow:auto;overscroll-behavior:contain}
+  .tree-detail{align-content:start;border-top:0;border-left:1px solid var(--line)}
+  .tree-detail p{font-size:.875rem;line-height:1.35}
+  .pause-dialog{width:min(480px,92vw)}
+  .pause-dialog .dialog-body{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px 12px}
+  .pause-dialog #retreat{grid-column:1/-1}
+  .report-content{padding:8px 12px;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .report-actions{grid-template-columns:repeat(4,minmax(0,1fr));padding:6px 12px}
+}
 </style>
 </head>
 <body>
@@ -203,9 +318,9 @@ dialog{
   <div id="events" class="sr-only" role="status" aria-live="polite"></div>
   <div id="team-health" class="sr-only" aria-label="Здоровье отряда"></div>
 </section>
-<footer><a id="download" href="./index.html" download="mutagen.html">Скачать HTML</a></footer>
+<footer><a id="download" href="./index.html" download="index.html">Скачать HTML</a></footer>
 </main>
-<dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button id="close" aria-label="Закрыть">×</button></div><div class="dialog-body" id="dialog-body"></div></dialog>
+<dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><strong class="tree-balance" id="tree-balance" hidden></strong><button id="close" aria-label="Закрыть">×</button></div><div class="dialog-body" id="dialog-body"></div></dialog>
 <dialog class="pause-dialog" id="pause-menu" aria-labelledby="pause-title">
   <div class="dialog-head"><h2 id="pause-title">Пауза</h2></div>
   <div class="dialog-body">
@@ -1617,7 +1732,7 @@ function recordResult(r,won,retreated) {
   return old?'Лучшая попытка · '+old.waves+' из '+r.total+' волн':'';
 }
 function stat(value,label) {
-  return '<div class="card"><strong>'+value+'</strong><span>'+label+'</span></div>';
+  return '<div><dt>'+label+'</dt><dd>'+value+'</dd></div>';
 }
 function finish(won,retreated=false) {
   if(!run) return;
@@ -1642,27 +1757,41 @@ function finish(won,retreated=false) {
   const squad=roster(r).length>1;
   const title=won?(r.missionIndex===missionData.length-1?'Сердце мутации уничтожено':'Миссия выполнена'):
     retreated?(squad?'Отряд эвакуирован':'Стрелок эвакуирован'):(squad?'Отряд выведен из строя':'Стрелок выведен из строя');
-  const statList=stat('+'+r.earned,'мутагена')+stat(r.cleared+'/'+r.total,'волн зачищено')
-    +stat(formatTime(Math.ceil(r.time)),'время вылазки')+stat(r.damageTaken,'урона получено')+stat(r.dodges,'уклонений');
-  const reward=newLoot?'<div class="card reward"><strong>Добыча · '+r.mission.reward+'</strong><p>'+r.mission.effect+
-    '</p><button class="primary" data-gear="'+r.missionIndex+'">Экипировать</button></div>':'';
-  const unlock=(newMission?'<p class="debrief-result">Открыта миссия «'+missionData[next].name+'».</p>':'')
-    +(newDifficulty?'<p class="debrief-result">Открыта сложность «'+difficultyName(r.difficulty+1)+'».</p>':'');
-  const setback=!won&&!retreated&&r.lastDamageSource?'<p>Первый урон на волне '+r.firstDamageWave+
-    '. Последний удар — '+damageNames[r.lastDamageSource]+'. Добытый мутаген уже в запасе.</p>':'';
-  const nextButton=newMission?'<button class="primary" data-mission="'+next+'">На карту</button>':'';
-  const tankReport=r.tank?'<p>Танк · '+r.tankBlocked+' урона поглощено бронёй · '+r.tankStrikes+' ударов по области'+(r.tank.hp>0?'':' · пал в бою')+'</p>':'';
-  show(title,'<p>'+r.mission.name+' · '+difficultyName(r.difficulty)+'</p><div class="debrief-grid">'+statList+'</div>'+
-    (record?'<p class="debrief-result">'+record+'</p>':'')+setback+tankReport+reward+unlock+
-    '<div class="actions"><button data-panel="tech">Потратить мутаген</button><button data-replay="'+r.difficulty+
-    '" data-replay-mission="'+r.missionIndex+'">Повторить вылазку</button>'+nextButton+'<button data-close>В ангар</button></div>');
+  const statList=stat('+'+r.earned,'Мутаген')+stat(r.cleared+'/'+r.total,'Волны')
+    +stat(formatTime(Math.ceil(r.time)),'Время');
+  const reward=newLoot?'<div class="card reward"><strong>'+r.mission.reward+'</strong><p>'+r.mission.effect+
+    '</p><button data-gear="'+r.missionIndex+'">Экипировать добычу</button></div>':'';
+  const unlock=(newMission?'<li>Открыта миссия «'+missionData[next].name+'»</li>':'')
+    +(newDifficulty?'<li>Открыта сложность «'+difficultyName(r.difficulty+1)+'»</li>':'');
+  const setback=!won&&!retreated&&r.lastDamageSource?'<p>Последний удар — '+damageNames[r.lastDamageSource]+
+    '. Первый урон на волне '+r.firstDamageWave+'.</p>':'';
+  const tankReport=r.tank?'<p>Танк поглотил '+r.tankBlocked+' урона и нанёс '+r.tankStrikes+
+    ' ударов по области'+(r.tank.hp>0?'':'. Пал в бою')+'.</p>':'';
+  const replay='<button data-replay="'+r.difficulty+'" data-replay-mission="'+r.missionIndex+'">Повторить вылазку</button>';
+  const upgrade='<button'+(won?'':' class="primary"')+' data-panel="tech">К прокачке</button>';
+  const onward='<button'+(won?' class="primary"':'')+(newMission?' data-mission="'+next+'">Следующая миссия':
+    ' data-panel="map">К карте')+'</button>';
+  const actions=won?[onward,upgrade,replay]:[upgrade,replay,onward];
+  show(title,'<div class="report-content"><div class="report-summary"><p>'+r.mission.name+' · '+difficultyName(r.difficulty)+
+    '</p><dl class="report-stats">'+statList+'</dl>'+(record&&record!=='Район зачищен'?'<p>'+record+'</p>':'')+
+    '</div><div class="report-rewards">'+reward+(unlock?'<ul class="report-unlocks">'+unlock+'</ul>':'')+
+    '<details class="report-more"><summary>Подробности боя</summary><p>Получено урона: '+r.damageTaken+
+    ' · Уклонения: '+r.dodges+'</p>'+setback+tankReport+'</details></div></div>'+
+    '<div class="report-actions">'+actions.join('')+'<button data-close>В ангар</button></div>');
 }
 function show(title,html) {
-  get('dialog-title').textContent=title;
-  get('dialog-body').innerHTML=html;
   const dialog=get('dialog');
-  dialog.classList.toggle('tree-open',title==='Дерево экипажа');
+  const body=get('dialog-body');
+  const tree=title==='Дерево экипажа';
+  const treeBalance=get('tree-balance');
+  treeBalance.hidden=!tree;
+  if(tree) treeBalance.textContent='Мутаген '+state.mutagen;
+  get('dialog-title').textContent=title;
+  body.innerHTML=html;
+  dialog.classList.toggle('tree-open',tree);
   dialog.classList.toggle('map-open',title==='Карта планеты');
+  dialog.classList.toggle('report-open',panel==='report');
+  body.scrollTop=0;
   if(!dialog.open) dialog.showModal();
   syncTelegramNav();
 }
@@ -1741,15 +1870,23 @@ function nodeDetail(){
     '" class="primary" '+(max||gate||state.mutagen<cost(key)?'disabled':'')+'>'+text+'</button>';
 }
 function showTree(){
-  const scroll=get('dialog-body').querySelector('.tree-scroll')?.scrollLeft||0;
+  const body=get('dialog-body');
+  const previousGraph=body.querySelector('.tree-scroll');
+  const scrollLeft=previousGraph?.scrollLeft||0;
+  const scrollTop=previousGraph?.scrollTop||0;
+  const bodyScroll=previousGraph?body.scrollTop:0;
   const selected=selectedTreeRole();
   const tabs=Object.entries(heroData).map(([role,hero])=>'<button type="button" class="tree-tab" data-node="'+role+
     '" aria-pressed="'+(role===selected)+'">'+hero.name+'</button>').join('');
-  show('Дерево экипажа','<div class="tree-intro"><p>Выбери героя или узел ветки.</p><strong class="tree-balance">Мутаген '+state.mutagen+'</strong></div><nav class="tree-tabs" aria-label="Ветки героев">'+tabs+'</nav>'+
+  show('Дерево экипажа','<nav class="tree-tabs" aria-label="Ветки героев">'+tabs+'</nav>'+
     '<div class="tree-scroll"><div class="tree-graph"><div class="tree-root">Терминал шаттла</div><div class="tree-grid">'+
     Object.entries(heroData).map(branchMarkup).join('')+'</div></div></div><div class="tree-detail">'+nodeDetail()+'</div>');
-  const graph=get('dialog-body').querySelector('.tree-scroll');
-  if(graph) graph.scrollLeft=scroll;
+  const graph=body.querySelector('.tree-scroll');
+  if(graph){
+    graph.scrollLeft=scrollLeft;
+    graph.scrollTop=scrollTop;
+    body.scrollTop=bodyScroll;
+  }
 }
 function locker(){
   const standard='<div class="card"><strong>Стандартный карабин</strong><p>15 базового урона за выстрел.</p><button data-standard '+(!state.equipped?'disabled':'')+'>'+(!state.equipped?'Экипирован':'Экипировать')+'</button></div>';
@@ -1791,6 +1928,7 @@ function selectMission(index=selectedMission){
   if(!missionData[index]||index>=state.missionUnlocked) return;
   if(selectedMission!==index) selectedDifficulty=highestDifficulty(index);
   selectedMission=index;
+  panel='map';
   const mission=missionData[index];
   const options=difficulties.map(({name},i)=>'<option value="'+(i+1)+'" '+(i+1>highestDifficulty(index)?'disabled':'')+
     ' '+(i+1===selectedDifficulty?'selected':'')+'>'+name+(i+1>highestDifficulty(index)?' · закрыто':'')+'</option>').join('');
@@ -2162,7 +2300,11 @@ document.addEventListener('click',event=>{
     selectedNode=button.dataset.node;
     const selector=button.classList.contains('tree-tab')?'.tree-tab':'.tree-node';
     showTree();
-    get('dialog-body').querySelector(selector+'[data-node="'+selectedNode+'"]')?.focus({preventScroll:true});
+    const body=get('dialog-body');
+    body.querySelector(selector+'[data-node="'+selectedNode+'"]')?.focus({preventScroll:true});
+    if(selector==='.tree-node'&&globalThis.matchMedia?.('(pointer: coarse) and (orientation: portrait), (max-width: 540px) and (orientation: portrait)').matches){
+      body.querySelector('.tree-detail')?.scrollIntoView({block:'nearest'});
+    }
   }
   if(button.dataset.upgrade) {
     const key=button.dataset.upgrade, upgrade=upgrades[key];
@@ -2171,6 +2313,9 @@ document.addEventListener('click',event=>{
       state[key]=rank(key)+1;
       save();
       showTree();
+      const body=get('dialog-body');
+      const next=body.querySelector('[data-upgrade]:not(:disabled)')||body.querySelector('.tree-node[aria-pressed=true]');
+      next?.focus({preventScroll:true});
     }
   }
   if(button.dataset.recruit) {
