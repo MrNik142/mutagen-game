@@ -38,7 +38,13 @@ dialog.tree-open{width:min(1160px,96vw)}
   background-image:radial-gradient(ellipse at 50% 22%,#263d5c84,transparent 68%),radial-gradient(#7799ba37 1px,transparent 1px);
   background-size:auto,17px 17px;
 }
+.tree-skill-art{image-rendering:pixelated}
 .tree-graph{min-width:850px}
+.tree-graph-selected{min-width:0}
+.tree-graph-selected .tree-branch{padding-top:0}
+.tree-graph-selected .tree-branch::before{content:none}
+.tree-graph-selected .tree-children{grid-template-columns:repeat(auto-fit,minmax(min(100%,112px),1fr))}
+.tree-graph-selected .tree-children::after{content:none}
 .tree-root{width:max-content;margin:auto;padding:5px 14px;border-radius:4px;border:1px solid #667790;background:#19243a;color:#c0cbe0;font-size:.82rem}
 .tree-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;position:relative;margin-top:15px}
 .tree-grid::before{content:'';position:absolute;left:9.8%;right:9.8%;top:0;border-top:2px solid #455671}
@@ -69,7 +75,12 @@ dialog.tree-open{width:min(1160px,96vw)}
 .tree-children::before{content:'';position:absolute;top:0;left:50%;height:14px;border-left:1px solid #667995}
 .tree-children::after{content:'';position:absolute;top:13px;left:24%;right:24%;border-top:1px solid #667995}
 .tree-children button::before{content:'';width:1px;height:4px;background:#667995;position:absolute;top:-5px;left:50%}
-.tree-children button:nth-child(n+3)::before{height:9px;top:-10px}
+.tree-children,.tree-children ul{list-style:none;margin:0;padding-left:0}
+.tree-children li{min-width:0}
+.tree-children li button{min-height:72px}
+.tree-children li ul{margin:7px 0 12px 7px;padding:0 0 0 7px;border-left:1px solid var(--branch);display:grid;gap:7px}
+.tree-children li ul button::before{content:none}
+.tree-children li ul button{border-left-color:var(--branch)}
 .tree-detail{
   padding:14px 18px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;
   align-items:start;border-top:1px solid var(--line);background:#151f30;
@@ -118,10 +129,7 @@ dialog.map-open{width:min(94vw,730px)}
 .scene-caption{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);padding:.35rem .55rem;border:1px solid var(--glow);border-radius:5px;background:#101727;color:var(--ink);white-space:nowrap;opacity:0;pointer-events:none;font-size:.875rem}
 .scene-actions button:focus-visible .scene-caption{opacity:1}
 @media(hover:hover){.scene-actions button:hover .scene-caption{opacity:1}}
-.battle-corner{position:absolute;z-index:1;top:9px;left:9px;display:grid;gap:1px;max-width:calc(100% - 66px);padding:5px 9px;border:1px solid #405273;border-radius:5px;background:#101728e8;pointer-events:none}
-.battle-corner strong{font-size:.875rem;letter-spacing:.025em;line-height:1.25}
-.battle-corner span{font-size:.75rem;color:#c0cce2;line-height:1.2}
-#capsule-status{color:#ffb2aa}
+.battle-corner{position:absolute;z-index:1;top:9px;left:9px;padding:5px 9px;border:1px solid #405273;border-radius:5px;background:#101728e8;pointer-events:none;font-size:.875rem;font-weight:700;line-height:1.25;white-space:nowrap}
 .battle-pause{position:absolute;z-index:1;right:9px;top:9px}
 .pause-glyph{display:flex;gap:4px}
 .pause-glyph::before,.pause-glyph::after{content:'';display:block;width:3px;height:13px;border-radius:1px;background:currentColor}
@@ -133,8 +141,7 @@ dialog.map-open{width:min(94vw,730px)}
 .field-choices{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:500px){.field-choices{grid-template-columns:1fr}}
 .route-choice>span{font-weight:500;font-size:.84rem;line-height:1.22}
-.route-choice[data-route="risk"]{border-color:#9b6758;background:#30242c}
-.route-choice[data-route="risk"]>span{color:#ffdbac}
+.route-dialog .dialog-head h2:focus{outline:none}
 .route-auto{font-size:.85rem;font-variant-numeric:tabular-nums}
 @media(max-width:430px) and (orientation:portrait){.route-choices{grid-template-columns:1fr}}
 .pause-dialog .dialog-body,.pause-volume{display:grid;gap:8px}
@@ -143,7 +150,7 @@ dialog.map-open{width:min(94vw,730px)}
 footer{justify-content:flex-end}
 .in-mission header,.in-mission footer{display:none}
 .in-mission main{padding-top:clamp(8px,2vw,20px)}
-@media(max-width:540px){header{padding-block:11px}.icon-button{width:36px;height:36px}.money{padding:.48rem .55rem}.battle-corner{top:5px;left:5px;padding:4px 6px}.battle-corner strong{font-size:.78rem}.battle-pause{right:5px;top:5px}}
+@media(max-width:540px){header{padding-block:11px}.icon-button{width:36px;height:36px}.money{padding:.48rem .55rem}.battle-corner{top:5px;left:5px;padding:4px 6px;font-size:.78rem}.battle-pause{right:5px;top:5px}}
 
 :root{
   --safe-top:max(env(safe-area-inset-top,0px),var(--tg-safe-area-inset-top,0px),var(--tg-content-safe-area-inset-top,0px));
@@ -166,7 +173,12 @@ dialog{
 #dialog .dialog-head{background:#161c2d}
 .telegram-miniapp #download{display:none}
 .telegram-miniapp footer{margin-bottom:0}
-.scene-touch-caption,.tree-tabs{display:none}
+.scene-touch-caption{display:none}
+.tree-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.tree-tabs .tree-tab{display:inline-flex;align-items:center;gap:6px;padding:.35em .6em}
+.tree-tabs .tree-tab img{width:28px;height:28px}
+.tree-tabs .tree-tab[aria-pressed=true]{border-color:var(--teal);background:#204353}
+.tree-detail small{color:var(--lime)}
 @media(pointer:coarse),(hover:none){
    .icon-button,.dialog-head button{min-width:44px;min-height:44px}
   .dialog-body>button,.dialog-body select,.actions button,.tree-tab{min-height:44px}
@@ -183,7 +195,6 @@ dialog{
   .ship{font-size:.75rem}
   .money{font-size:.85rem}
   .header-actions{gap:5px}
-  .battle-corner{max-width:calc(100% - 60px)}
 }
 /* The art and its hotspots share a single coordinate system. */
 body{
@@ -334,16 +345,12 @@ dialog.gear-open{width:min(94vw,1000px);border-color:#526781;background:#0d1523}
 .boss-hud small{font:650 clamp(.62rem,1.6cqw,.84rem)/1.1 system-ui,sans-serif;color:var(--boss-color)}
 .boss-health-track{height:6px;overflow:hidden;background:#29243a;border:1px solid #52485b;border-radius:3px}
 .boss-health-fill{display:block;width:100%;height:100%;transform-origin:left;transform:scaleX(var(--boss-value,1));background:var(--boss-color)}
-.battle-board:has(.boss-hud:not([hidden])) .battle-corner{max-width:28%}
+.battle-board:has(.boss-hud:not([hidden])) .battle-corner{font-size:clamp(.6rem,2.4cqw,.875rem);padding-inline:clamp(4px,1cqw,9px)}
 .loot-toast{
   position:absolute;z-index:2;left:50%;bottom:var(--hud-inset);transform:translateX(-50%);
   max-width:calc(100% - 20px);padding:6px 12px;border:1px solid #d9ac59;border-radius:6px;
   background:#1c1728f2;color:#ffe5a4;font-size:.875rem;font-weight:750;text-align:center;pointer-events:none;
   box-shadow:0 0 16px #e5ad5850;
-}
-@media(max-width:540px){
-  .report-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .report-actions [data-close]{grid-column:1/-1}
 }
 main>footer{margin:0;padding:5px 14px;background:#0a0d16}
 .telegram-miniapp main>footer{display:none}
@@ -386,7 +393,7 @@ dialog.report-open{width:min(94vw,690px)}
 .report-more{font-size:.85rem}
 .report-more summary{padding:6px 0;cursor:pointer}
 .report-more[open] summary{margin-bottom:4px}
-.report-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 16px;border-top:1px solid var(--line)}
+.report-actions{display:grid;grid-template-columns:repeat(2,minmax(0,11rem));justify-content:center;gap:8px;padding:8px 16px;border-top:1px solid var(--line)}
 .report-actions button{min-height:44px;padding:6px 8px}
 .report-actions button{line-height:1.15}
 .volume-control{display:grid;gap:3px;padding:6px 10px;border:1px solid var(--line);border-radius:5px;background:#101625}
@@ -474,7 +481,7 @@ dialog.report-open{width:min(94vw,690px)}
 <section class="screen" id="combat" aria-label="Вылазка" hidden>
   <div class="battle-board">
     <canvas id="arena" width="576" height="252" aria-label="Автоматический бой. Здоровье отображается над бойцами."></canvas>
-    <div class="battle-corner"><strong id="stage"></strong><span id="wave"></span><span id="capsule-status" hidden></span></div>
+    <div class="battle-corner" id="sector-progress"></div>
     <div class="boss-hud" id="boss-hud" hidden>
       <strong id="boss-name"></strong><small id="boss-status" hidden></small>
       <div id="boss-health-track" class="boss-health-track" role="progressbar" aria-label="Здоровье босса" aria-valuemin="0" aria-valuemax="100"><span class="boss-health-fill"></span></div>
@@ -489,10 +496,10 @@ dialog.report-open{width:min(94vw,690px)}
 </main>
 <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title"></h2><strong class="tree-balance" id="tree-balance" hidden></strong><button id="close" aria-label="Закрыть">×</button></div><div class="dialog-body" id="dialog-body"></div></dialog>
 <dialog class="route-dialog" id="route-menu" aria-labelledby="route-title" aria-describedby="route-auto">
-  <div class="dialog-head"><h2 id="route-title">Развилка у шлюза</h2></div>
+  <div class="dialog-head"><h2 id="route-title" tabindex="-1" autofocus>Развилка у шлюза</h2></div>
   <div class="dialog-body">
     <div class="route-choices">
-      <button type="button" class="route-choice primary" data-route="safe" autofocus>
+      <button type="button" class="route-choice" data-route="safe">
         Безопасный маршрут<span>Обычный бой в следующем секторе</span>
       </button>
       <button type="button" class="route-choice" data-route="risk">
@@ -503,7 +510,7 @@ dialog.report-open{width:min(94vw,690px)}
   </div>
 </dialog>
 <dialog class="route-dialog" id="field-menu" aria-labelledby="field-title" aria-describedby="field-auto">
-  <div class="dialog-head"><h2 id="field-title">Полевые модификации</h2></div>
+  <div class="dialog-head"><h2 id="field-title" tabindex="-1" autofocus>Полевые модификации</h2></div>
   <div class="dialog-body">
     <div class="route-choices field-choices" id="field-choices"></div>
     <p class="route-auto" id="field-auto">Действует до конца вылазки. Автовыбор через <strong id="field-seconds">6</strong> с.</p>
@@ -541,7 +548,6 @@ const difficulties = [
   {name:'Блокада',hp:1.52,damage:1.34,speed:4,reward:2,description:'Дополнительные мутанты заходят с фланга. Кислотные лужи крупнее.'},
   {name:'Последний рубеж',hp:2.04,damage:1.78,speed:7,reward:3,description:'Кислота частично пробивает броню танка, а его ремонт замедлен. Охрана снижает урон по Громиле.'},
 ];
-const tankPrice=190;
 state.missionUnlocked??=state.loot?2:1;
 // Older saves had eight tiers. Keep earned access to the corresponding bands.
 if(state.balanceVersion<1) {
@@ -566,9 +572,9 @@ const waves = [
 ];
 const campaignYield=[1,.74,.48,.38,.29];
 const missionData=[
-  {name:'Ретранслятор',rooms:3,boss:'Громила',tint:'#7ac5d0',brief:'Стаи атакуют с двух сторон. Громила таранит через отсек и открывается после столкновения.',reward:'Карабин «Шип»',owner:'rifle',effect:'19 базового урона, пробивает броню.',strength:1},
-  {name:'Насосная',rooms:4,boss:'Смотритель',tint:'#e6a472',brief:'Криоплювы замедляют отряд. Смотритель пускает струи хладагента через весь отсек.',reward:'Панцирь Смотрителя',owner:'tank',effect:'Танк получает +35 к максимальному здоровью.',strength:1.53},
-  {name:'Карантинный комплекс',rooms:5,boss:'Кокон',tint:'#bf9ae7',brief:'Споровики замедляют атаки. Кокон защищён, пока живы его наросты.',reward:'Клинок «Коготь»',owner:'blade',effect:'Дамагер наносит на 25% больше урона в ближнем бою.',strength:2.25},
+  {name:'Ретранслятор',rooms:3,boss:'Громила',tint:'#7ac5d0',brief:'Стаи атакуют с двух сторон. Громила таранит через отсек и открывается после столкновения.',reward:'Карабин «Шип»',owner:'rifle',effect:'2,4 базового урона, пробивает броню.',strength:1},
+  {name:'Насосная',rooms:4,boss:'Смотритель',tint:'#e6a472',brief:'Криоплювы замедляют отряд. Смотритель пускает струи хладагента через весь отсек.',reward:'Панцирь Смотрителя',owner:'tank',effect:'Танк получает +3 к максимальному здоровью.',strength:1.53},
+  {name:'Карантинный комплекс',rooms:5,boss:'Кокон',tint:'#bf9ae7',brief:'Споровики замедляют атаки. Кокон защищён, пока живы его наросты.',reward:'Клинок «Коготь»',owner:'blade',effect:'Дамагер наносит на 25% больше урона в ближнем бою.',strength:2.05},
   {name:'Реактор',rooms:6,boss:'Реакторник',tint:'#8cd781',brief:'Дуговики бьют лучом по бойцам на одной линии. Реакторник по очереди перегревает участки пола.',reward:'Резонатор',owner:'psi',effect:'Цепная молния наносит на 25% больше урона.',strength:3.23},
   {name:'Ядро',rooms:7,boss:'Сердце мутации',tint:'#ee8389',brief:'Имитаторы распадаются на двойников. Сердце мутации притягивает ближайших бойцов и выпускает импульс.',reward:'Капсула Ядра',owner:'medic',effect:'Медик лечит на 25% сильнее.',strength:4.18},
 ];
@@ -590,7 +596,7 @@ const campaignWaves=[
     ['charger fast armor spit fast','charger armor armor fast spit','boss charger'],
   ],
   [
-    ['ward fast armor spit','charger fast ward fast spit','ward armor fast armor'],
+    ['ward fast fast','charger fast ward fast spit','ward armor fast armor'],
     ['fast ward charger fast fast','spit ward armor fast charger','charger fast ward armor spit'],
     ['ward spit armor fast armor','charger fast fast ward spit fast','ward charger armor ward fast'],
     ['ward fast spit charger fast','armor spit ward armor charger','ward charger fast spit armor fast'],
@@ -615,11 +621,11 @@ const campaignWaves=[
   ],
 ];
 const heroData={
-  rifle:{name:'Стрелок',ability:'Скоростной огонь',detail:'На 5 секунд ускоряет стрельбу.',color:'#ffd28a',nodes:['power','rate','vitality','slow','reflex','bossRounds','boostCycle']},
-  tank:{name:'Танк',ability:'Удар по области',detail:'Бьёт нескольких мутантов рядом и восстанавливает броню между секторами.',color:'#9cdaff',price:190,after:0,nodes:['guard','taunt','impact','acidPlate','tankRadius','tankCycle']},
-  blade:{name:'Дамагер',ability:'Теневая атака',detail:'Уходит в невидимость и наносит более сильные удары, пока скрыт.',color:'#ff9f9a',price:230,after:2,nodes:['bladeForce','bladeVeil','bladeArmor','bladeHealth','bladeTempo','bladeAmbush']},
-  psi:{name:'Псионик',ability:'Цепная молния',detail:'Электрический разряд перескакивает между ближайшими видимыми целями.',color:'#cbb2ff',price:310,after:3,nodes:['psiForce','psiChain','psiCycle','psiHealth','psiRelay','psiShot']},
-  medic:{name:'Медик',ability:'Полевая помощь',detail:'Лечит союзника с наименьшей долей здоровья в пределах видимости.',color:'#b4f6a0',price:410,after:4,nodes:['medicForce','medicReach','medicCycle','medicHealth','medicArmor','medicShot']},
+  rifle:{name:'Стрелок',ability:'Скоростной огонь',detail:'На 5 секунд ускоряет стрельбу.',color:'#ffd28a',nodes:['power','rate','vitality','slow','reflex','bossRounds','boostCycle','rifleReserve','rifleFeed','riflePierce','riflePunch','rifleVent']},
+  tank:{name:'Танк',ability:'Удар по области',detail:'Бьёт нескольких мутантов рядом и восстанавливает броню между секторами.',color:'#9cdaff',price:125,after:0,nodes:['guard','taunt','impact','acidPlate','tankRadius','tankCycle','tankReserve','tankLaminate','tankFront','tankPiston','tankRhythm','tankSignal','tankReset']},
+  blade:{name:'Дамагер',ability:'Теневая атака',detail:'Уходит в невидимость и наносит более сильные удары, пока скрыт.',color:'#ff9f9a',price:170,after:2,nodes:['bladeForce','bladeVeil','bladeArmor','bladeHealth','bladeTempo','bladeAmbush','bladeReserve','bladeEdge','bladeLunge','bladeFade','bladeFinish','bladeRhythm']},
+  psi:{name:'Псионик',ability:'Цепная молния',detail:'Электрический разряд перескакивает между ближайшими видимыми целями.',color:'#cbb2ff',price:225,after:3,nodes:['psiForce','psiChain','psiCycle','psiHealth','psiRelay','psiShot','psiReserve','psiFocus','psiReach','psiReset','psiNetwork','psiPulse']},
+  medic:{name:'Медик',ability:'Полевая помощь',detail:'Лечит союзника с наименьшей долей здоровья в пределах видимости.',color:'#b4f6a0',price:290,after:4,nodes:['medicForce','medicReach','medicCycle','medicHealth','medicArmor','medicShot','medicReserve','medicKit','medicRange','medicReset','medicShield','medicSidearm']},
 };
 const auxHeroes=['blade','psi','medic'];
 
@@ -658,7 +664,9 @@ function missionEncounter(r){
   }
   const roll=campaignWaves[r.missionIndex][r.room][r.wave-1].split(' ');
   const label=final?r.mission.boss+' выходит на арену':extraSectors[r.missionIndex][r.room]+' · волна '+r.wave;
-  const right=[[430,90],[480,135],[463,206],[526,170],[525,100],[519,219]];
+  const wardIntro=r.missionIndex===2&&r.room===0&&r.wave===1;
+  const right=wardIntro?[[467,149],[467,101],[467,197]]:
+    [[430,90],[480,135],[463,206],[526,170],[525,100],[519,219]];
   const flank=[[80,113],[85,202]];
   let side=0;
   const enemies=roll.map((kind,i)=>{
@@ -1148,9 +1156,9 @@ function separateBodies(r,bodies,spacing,dt){
 }
 function makeEnemy(kind,x,y,room,difficulty,missionIndex=0) {
   const base={
-    fast:{hp:32,speed:77,damage:14,reward:5},
-    spit:{hp:40,speed:31,damage:16,reward:7},
-    armor:{hp:84,speed:40,damage:22,reward:10},
+    fast:{hp:50,speed:77,damage:10,reward:5},
+    spit:{hp:60,speed:31,damage:15,reward:7},
+    armor:{hp:90,speed:40,damage:20,reward:10},
     charger:{hp:58,speed:54,damage:24,reward:9},
     ward:{hp:61,speed:36,damage:13,reward:10},
     leech:{hp:47,speed:75,damage:18,reward:9},
@@ -1163,8 +1171,8 @@ function makeEnemy(kind,x,y,room,difficulty,missionIndex=0) {
   }[kind];
   const profile=difficulties[difficulty-1];
   const mission=missionData[missionIndex];
-  const hpScale=mission.strength*(1+room*(missionIndex===0?.20:.15));
-  const damageScale=(1+(mission.strength-1)*(missionIndex>=3?.63:.52))*(1+room*.08);
+  const hpScale=(1+(mission.strength-1)*(kind==='boss'?.76:.52))*(1+room*(missionIndex===0?.20:.08));
+  const damageScale=(1+(mission.strength-1)*.29)*(1+room*(missionIndex===0?.08:.045));
   const bossScale=kind==='boss'&&missionIndex>0?1.25:1;
   const tierWeight=[1,.86,.70,.43,.34][missionIndex];
   const tierHp=1+(profile.hp-1)*tierWeight;
@@ -1173,7 +1181,7 @@ function makeEnemy(kind,x,y,room,difficulty,missionIndex=0) {
   const max=Math.round(base.hp*tierHp*hpScale*bossScale*(brute?1.20:1));
   const damage=Math.round(base.damage*tierDamage*damageScale*(brute?1.02:1));
   return {kind,x,y,max,hp:max,variant:missionIndex,speed:base.speed+profile.speed+(brute?9:0),damage,
-    value:Math.round(base.reward*profile.reward*(1+missionIndex*.18)*campaignYield[missionIndex]),
+    value:Math.max(1,Math.round(base.reward*profile.reward*(1+missionIndex*.18)*campaignYield[missionIndex]*(kind==='boss'?1:missionIndex===0?.36:.55))),
     cd:.45,slow:0,taunted:0,dir:-1,wind:0,aim:null,exposed:0,hit:0,flankSide:y<152?-1:1};
 }
 function notify(message,tone='',priority=0) {
@@ -1186,13 +1194,13 @@ function notify(message,tone='',priority=0) {
   events.dataset.tone=tone;
   if(events.textContent!==message) events.textContent=message;
 }
-function start(difficulty,missionIndex=selectedMission) {
+function start(difficulty,missionIndex=selectedMission,replaySpeed=1) {
   if(run||!missionData[missionIndex]||missionIndex>=state.missionUnlocked||
     !Number.isInteger(difficulty)||difficulty<1||difficulty>highestDifficulty(missionIndex)) return;
   get('dialog').close();
   const hp=heroMaxHealth('rifle');
   const mission=missionData[missionIndex];
-  run={room:0,wave:0,difficulty,mission,missionIndex,total:mission.rooms*3,enemies:[],shots:[],acid:[],pools:[],patterns:[],time:0,speed:1,seed:randomSeed(),phase:"enter",
+  run={room:0,wave:0,difficulty,mission,missionIndex,total:mission.rooms*3,enemies:[],shots:[],acid:[],pools:[],patterns:[],time:0,speed:[1,2,3].includes(replaySpeed)?replaySpeed:1,seed:randomSeed(),phase:"enter",
     paused:false,earned:0,mutagenDrops:[],mutagenLabels:[],debris:[],fallenActors:[],bossLootDrop:null,bossDefeated:false,damageBuff:1,rateBuff:1,
     cleared:0,dodges:0,lowestHP:hp,damageTaken:0,firstDamageWave:null,lastDamageSource:null,accumulator:0,eventPriority:0,eventUntil:0,
     tankBlocked:0,tankStrikes:0,
@@ -1204,7 +1212,7 @@ function start(difficulty,missionIndex=selectedMission) {
   get('hangar').hidden=true;
   get('combat').hidden=false;
   document.body.classList.add('in-mission');
-  get('speed').textContent='Скорость ×1';
+  get('speed').textContent='Скорость ×'+run.speed;
   setMusicTrack(nextBattleTrack());
   prepareSector(run);
   notify('Высадка · '+mission.name);
@@ -1214,30 +1222,32 @@ function start(difficulty,missionIndex=selectedMission) {
 }
 function heroMaxHealth(role){
   switch(role){
-    case 'rifle': return 110+state.vitality*17;
-    case 'tank': return 230+state.guard*25+(gearEquipped(1)?35:0);
-    case 'blade': return 125+rank('bladeHealth')*14;
-    case 'psi': return 105+rank('psiHealth')*13;
-    case 'medic': return 113+rank('medicHealth')*15;
+    case 'rifle': return 100+state.vitality*10+rank('rifleReserve')*10;
+    case 'tank': return 200+state.guard*20+rank('tankReserve')*10+(gearEquipped(1)?30:0);
+    case 'blade': return 120+rank('bladeHealth')*10+rank('bladeReserve')*10;
+    case 'psi': return 100+rank('psiHealth')*10+rank('psiReserve')*10;
+    case 'medic': return 110+rank('medicHealth')*10+rank('medicReserve')*10;
   }
 }
+const statNumber=new Intl.NumberFormat('ru',{maximumFractionDigits:2});
+const combatPoints=value=>statNumber.format(value/10);
 const heroAttacks={
-  rifle:{damage:()=>(gearEquipped(0)?19:15)*(1+state.power*.20),interval:()=>.55/(1+state.rate*.18)},
-  tank:{damage:()=>16,interval:()=>.95},
-  blade:{damage:()=>(27+rank('bladeForce')*6)*(gearEquipped(2)?1.25:1),interval:()=>.76/(1+rank('bladeTempo')*.11)},
-  psi:{damage:()=>15+rank('psiShot')*3,interval:()=>.83},
-  medic:{damage:()=>13+rank('medicShot')*3,interval:()=>1.02},
+  rifle:{damage:()=>(gearEquipped(0)?24:20)+state.power*2+rank('riflePunch')*10,interval:()=>.55/(1+state.rate*.12+rank('rifleFeed')*.06)},
+  tank:{damage:()=>20+rank('tankPiston')*3,interval:()=>.95/(1+rank('tankRhythm')*.08)},
+  blade:{damage:()=>(30+rank('bladeForce')*4+rank('bladeEdge')*3)*(gearEquipped(2)?1.25:1),interval:()=>.76/(1+rank('bladeTempo')*.09+rank('bladeRhythm')*.06)},
+  psi:{damage:()=>20+rank('psiShot')*3+rank('psiPulse')*3,interval:()=>.83},
+  medic:{damage:()=>15+rank('medicShot')*3+rank('medicSidearm')*3,interval:()=>1.02},
 };
-const tankStrikeRadius=()=>47+rank('tankRadius')*4;
-const bladeCloakDuration=()=>2.15+rank('bladeVeil')*.55;
-const psionChainLimit=()=>3+rank('psiChain');
-const medicHealAmount=()=>Math.round((32+rank('medicForce')*8)*(gearEquipped(4)?1.25:1));
+const tankStrikeRadius=()=>47+rank('tankRadius')*4+rank('tankFront')*2;
+const bladeCloakDuration=()=>2.15+rank('bladeVeil')*.45;
+const psionChainLimit=()=>3+rank('psiChain')+rank('psiNetwork');
+const medicHealAmount=()=>Math.round((30+rank('medicForce')*4+rank('medicKit')*10)*(gearEquipped(4)?1.25:1));
 const heroCooldowns={
-  rifle:()=>13-rank('boostCycle')*1.4,
-  tank:()=>4.1-rank('tankCycle')*.35,
-  blade:()=>6.6,
-  psi:()=>4.15-rank('psiCycle')*.49,
-  medic:()=>4.8-rank('medicCycle')*.6,
+  rifle:()=>13-rank('boostCycle')*1.0-rank('rifleVent')*.4,
+  tank:()=>4.1-rank('tankCycle')*.35-rank('tankReset')*.22,
+  blade:()=>6.6-rank('bladeFade')*.45,
+  psi:()=>4.15-rank('psiCycle')*.40-rank('psiReset')*.22,
+  medic:()=>4.8-rank('medicCycle')*.45-rank('medicReset')*.24,
 };
 function makeTank() {
   const max=heroMaxHealth('tank');
@@ -1358,8 +1368,10 @@ function prepareSector(r) {
   r.sectorEvent=prepareSectorHazard(r,final);
   r.sectorFeature=prepareSectorFeature(r,final);
   r.backups=backupCount(r);
+  r.overlapAt=0;
   r.packNumber=0;
-  r.reinforceAt=0;
+  r.pendingReinforcement=null;
+  r.bossArrivesAt=0;
   r.focus=null;
   r.patterns=[];
   r.lastEnemyHit=r.time;
@@ -1389,9 +1401,10 @@ function spawnWave(r) {
   r.phase='fight';
   r.eventPriority=0;
   if(r.sectorEvent) r.sectorEvent.nextAt=r.time+1.1;
-  if(r.bossWaiting) spawnReinforcement(r);
+  if(r.bossWaiting) queueReinforcement(r);
   else {
     r.enemies=r.encounter.enemies.map(data=>spawnEnemy(r,data));
+    r.overlapAt=r.time+(r.missionIndex===0?4.5:3.2);
     if(r.sectorFeature?.kind==='evac'){
       const drone=r.sectorFeature.drone;
       drone.status='moving';
@@ -1470,21 +1483,22 @@ function releaseCapsules(r){
   }
 }
 const reinforcementGroups=[
-  [],
+  ['fast fast','fast fast fast','fast spit'],
   ['fast fast charger','spit armor fast','charger fast spit','armor charger ward'],
   ['ward charger fast spit','fast armor ward fast','charger ward armor spit','ward spit fast charger'],
   ['leech charger ward spit','orb fast leech armor','charger orb ward leech','armor ward leech fast orb'],
   ['orb ward leech charger','charger fast orb armor leech','ward orb armor leech spit','orb leech charger ward armor','charger orb ward fast leech'],
 ];
 function backupCount(r){
-  if(r.missionIndex===0) return 0;
+  if(r.missionIndex===0) return r.room===2&&r.wave===3?0:(r.cleared>0?1:0);
   if(r.missionIndex===1) return r.room===0&&r.wave<3?0:r.room<2?1:2;
-  if(r.missionIndex===2) return r.room>=3&&r.wave!==1?3:2;
-  if(r.missionIndex===3) return r.room>=3||r.wave===3?3:2;
-  return r.room>=4&&r.wave!==1?4:3;
+  const {missionIndex,room,wave,difficulty}=r;
+  if(missionIndex===2) return room===0?Number(wave>1):room>=3?2:1;
+  if(missionIndex===3) return room<2?1:room>=4&&difficulty>1?3:2;
+  return room<2?1:room>=4&&(wave>1||difficulty>1)?3:2;
 }
-function spawnReinforcement(r){
-  const pack=r.packNumber++;
+function queueReinforcement(r){
+  const pack=r.packNumber;
   const options=reinforcementGroups[r.missionIndex];
   const kinds=options[(r.room*3+r.wave+pack*3+r.missionIndex)%options.length].split(' ');
   const right=[[466,84],[504,150],[490,218]], left=[[68,106],[79,188],[47,220]];
@@ -1493,11 +1507,21 @@ function spawnReinforcement(r){
   const usable=slots.filter(([x,y])=>canSpawnEnemy(r,{x,y}));
   const distant=usable.filter(([x,y])=>team.every(a=>distance(a,{x,y})>48));
   const positions=[...distant,...usable.filter(p=>!distant.includes(p))];
-  r.enemies=kinds.map((kind,i)=>{
+  const arrivals=kinds.map((kind,i)=>{
     const [x,y]=positions[i]||[520,95+i*24];
-    return spawnEnemy(r,[kind==='spit'?regionalMutant[r.missionIndex]:kind,x,y]);
+    return [kind==='spit'?regionalMutant[r.missionIndex]:kind,x,y];
   });
+  const visibleFor=.85*r.speed;
+  r.pendingReinforcement={arrivals,visibleFor,arrivesAt:r.time+visibleFor};
+  notify('Сигнал движения у шлюза','danger',1);
+}
+function spawnReinforcement(r){
+  const {arrivals}=r.pendingReinforcement;
+  r.enemies.push(...arrivals.map(data=>spawnEnemy(r,data)));
+  r.pendingReinforcement=null;
+  r.packNumber++;
   r.backups--;
+  r.overlapAt=r.time+3.6;
   assignDroneHunters(r,1);
   notify('Подкрепление · '+sectorLabel(r),'danger',1);
 }
@@ -1548,19 +1572,19 @@ function nextFight(r){
     if(!activeDrone(r)) advance(r);
     return;
   }
-  if(!r.reinforceAt){
-    r.reinforceAt=r.time+.65;
-    notify(r.backups?'Сигнал движения у шлюза':r.mission.boss+' приближается','danger');
+  if(r.backups){
+    queueReinforcement(r);
     return;
   }
-  if(r.time<r.reinforceAt) return;
-  r.reinforceAt=0;
-  if(r.backups) spawnReinforcement(r);
-  else {
-    r.bossWaiting=false;
-    r.enemies=r.encounter.enemies.map(data=>spawnEnemy(r,data));
-    notify(r.encounter.label,'danger');
+  if(!r.bossArrivesAt){
+    r.bossArrivesAt=r.time+.65;
+    notify(r.mission.boss+' приближается','danger');
+    return;
   }
+  if(r.time<r.bossArrivesAt) return;
+  r.bossWaiting=false;
+  r.enemies=r.encounter.enemies.map(data=>spawnEnemy(r,data));
+  notify(r.encounter.label,'danger');
 }
 
 function safeDirection(r, h, score, step) {
@@ -1640,11 +1664,14 @@ function broodTarget(r,actor){
 function attackClock(r,actor,dt){
   return dt*(actor.sporesUntil>r.time?.67:1);
 }
+function shieldedByWard(r,target) {
+  return target.kind!=='ward'&&r.enemies.some(e=>e.kind==='ward'&&e.hp>0&&distance(e,target)<82);
+}
 function applyEnemyDamage(r,target,amount) {
   r.lastEnemyHit=r.time;
-  const warded=target.kind!=='ward'&&r.enemies.some(e=>e.kind==='ward'&&e.hp>0&&distance(e,target)<82);
+  const warded=shieldedByWard(r,target);
   const brute=target.kind==='boss'&&target.variant===0;
-  const armor=guardedBoss(r,target)?(target.variant===2?.30:.55):warded?.74:1;
+  const armor=guardedBoss(r,target)?(target.variant===2?.30:.55):warded?.84:1;
   const chargeArmor=brute&&(target.bruteRagePending||target.bruteCharge?.combo)?.52:1;
   const exposure=brute&&target.exposed>0&&chargeArmor===1?1.55:1;
   target.hp-=Math.max(1,Math.round(amount*armor*chargeArmor*exposure));
@@ -1680,8 +1707,8 @@ function updateTank(r,dt) {
   const strike=nearby.filter(e=>distance(tank,e)<=strikeRadius);
   if(tank.skill<=0&&strike.length&&(strike.length>=2||distance(tank,target)<=28||target.exposed>0)) {
     for(const enemy of strike) {
-      applyEnemyDamage(r,enemy,Math.round((enemy.kind==='armor'?27:31)*(1+rank('impact')*.16)*r.damageBuff));
-      if(state.taunt) enemy.taunted=2.75;
+      applyEnemyDamage(r,enemy,Math.round((enemy.kind==='armor'?27:31)*(1+rank('impact')*.12)*r.damageBuff));
+      if(state.taunt) enemy.taunted=2.75+rank('tankSignal')*.35;
     }
     tank.swingAt=r.time;
     tank.swingType='slam';
@@ -1697,7 +1724,7 @@ function updateTank(r,dt) {
     return;
   }
   if(tank.cd<=0) {
-    applyEnemyDamage(r,target,Math.round((target.kind==='armor'?12:heroAttacks.tank.damage())*r.damageBuff));
+    applyEnemyDamage(r,target,Math.round((heroAttacks.tank.damage()*(target.kind==='armor'?.7:1))*r.damageBuff));
     tank.swingAt=r.time;
     tank.swingType='strike';
     playEffect('tankHit',tank.x);
@@ -1712,7 +1739,7 @@ function attack(r,target) {
   if(piercing) r.piercerUsed=true;
   const bossBonus=target.kind==='boss'?1+rank('bossRounds')*.09:1;
   const damage=Math.round(heroAttacks.rifle.damage()*r.damageBuff*bossBonus*(target.exposed>0&&target.variant!==0?1.55:1));
-  applyEnemyDamage(r,target,target.kind==='armor'&&!gearEquipped(0) ? Math.round(damage*.65) : damage);
+  applyEnemyDamage(r,target,target.kind==='armor'&&!gearEquipped(0) ? Math.round(damage*(.65+rank('riflePierce')*.07)) : damage);
   target.slow=state.slow?.6+state.slow*.35:0;
   playEffect('rifle',h.x);
   h.flash=.15;
@@ -1788,13 +1815,13 @@ function bladeTurn(r,blade,target,dt){
     notify('Дамагер ушёл в невидимость','good',1);
   }
   if(distance(blade,target)>26||obstruction(r.layout.obstacles,blade,target)){
-    const speed=blade.cloak>0?94:76;
+    const speed=blade.cloak>0?94+rank('bladeLunge')*4:76;
     const lane=target.y<103?21:target.y>198?-21:blade.y<target.y?-21:21;
     const point=combatPosition(r,blade,target,25,lane);
     if(point&&distance(blade,point)>5) stepToward(r,blade,point,speed,dt);
     if(!blade.moving) stepToward(r,blade,target,speed,dt);
   } else if(blade.cd<=0){
-    const hidden=blade.cloak>0?1.55+rank('bladeAmbush')*.12:1;
+    const hidden=blade.cloak>0?1.55+rank('bladeAmbush')*.12+rank('bladeFinish')*.08:1;
     const armor=target.kind==='armor'?.79:1;
     applyEnemyDamage(r,target,Math.round(heroAttacks.blade.damage()*hidden*armor*r.damageBuff));
     recruitShot(r,blade,target,'#ff9988',.13);
@@ -1808,7 +1835,7 @@ function chainTargets(r,origin,targets,limit){
   const remaining=targets.slice(), result=[];
   let source=origin;
   while(result.length<limit&&remaining.length){
-    const next=nearest(remaining.filter(e=>distance(e,source)<(result.length?95:149)&&!obstruction(r.layout.obstacles,source,e)),source);
+    const next=nearest(remaining.filter(e=>distance(e,source)<(result.length?95+rank('psiReach')*6:149)&&!obstruction(r.layout.obstacles,source,e)),source);
     if(!next) break;
     remaining.splice(remaining.indexOf(next),1);
     result.push(next);
@@ -1821,7 +1848,7 @@ function psionAttack(r,actor,enemies){
   if(actor.skill>0||!targets.length) return false;
   let source=actor;
   targets.forEach((target,i)=>{
-    applyEnemyDamage(r,target,Math.round((24+rank('psiForce')*5)*(gearEquipped(3)?1.25:1)*Math.pow(.88+rank('psiRelay')*.025,i)*r.damageBuff));
+    applyEnemyDamage(r,target,Math.round((24+rank('psiForce')*4+rank('psiFocus')*3)*(gearEquipped(3)?1.25:1)*Math.pow(.88+rank('psiRelay')*.025,i)*r.damageBuff));
     recruitShot(r,source,target,'#d9b6ff',.31);
     source=target;
   });
@@ -1833,14 +1860,14 @@ function psionAttack(r,actor,enemies){
 }
 function healAlly(r,actor){
   if(actor.skill>0) return false;
-  const range=142+rank('medicReach')*21;
+  const range=142+rank('medicReach')*16+rank('medicRange')*7;
   const injured=survivors(r).filter(other=>other.hp<other.max*.92&&distance(actor,other)<range
     &&!obstruction(r.layout.obstacles,actor,other));
   const patient=lowestHealth(injured);
   if(!patient) return false;
   const restore=medicHealAmount();
   patient.hp=Math.min(patient.max,patient.hp+restore);
-  if(r.fieldMod==='shield') patient.armorUntil=r.time+2.5;
+  if(r.fieldMod==='shield'||rank('medicShield')) patient.armorUntil=r.time+Math.max(r.fieldMod==='shield'?2.5:0,1+rank('medicShield')*.35);
   recruitShot(r,actor,patient,'#9dec9c',.32);
   r.shots.push({x:patient.x,y:patient.y,life:.28,impact:true,radius:25,heal:true});
   actor.swingAt=r.time;
@@ -1912,7 +1939,7 @@ function hurt(r, damage, actor=r.h, source) {
   const acid=source==='spit'||source==='pool';
   if(acid&&r.fieldMod==='seals') damage=Math.max(1,Math.round(damage*.70));
   if(actor===r.tank) {
-    const armor=r.difficulty===3&&acid?.83:.65-Math.min(3,state.guard)*.075-Math.max(0,state.guard-3)*.025;
+    const armor=r.difficulty===3&&acid?.83:.65-Math.min(3,state.guard)*.06-Math.max(0,state.guard-3)*.02-rank('tankLaminate')*.025;
     const reduced=Math.max(1,Math.round(damage*armor*(acid?1-rank('acidPlate')*.10:1)));
     r.tankBlocked+=damage-reduced;
     damage=reduced;
@@ -1934,7 +1961,7 @@ function hurt(r, damage, actor=r.h, source) {
   if(actor.hp===0&&survivors(r).length) {
     notify(name+' выбыл. Отряд продолжает бой','danger',4);
   } else if(actor.hp>0&&actor.hp<=actor.max*.27) {
-    notify(name+' ранен. Осталось '+Math.ceil(actor.hp)+' здоровья','danger',2);
+    notify(name+' ранен. Осталось '+combatPoints(actor.hp)+' здоровья','danger',2);
   }
 }
 function slam(r,e) {
@@ -2589,10 +2616,9 @@ function offerFieldMods(r){
   r.phase='field';
   r.fieldRemaining=6;
   get('field-seconds').textContent='6';
-  get('field-choices').innerHTML=offers.map((key,index)=>{
+  get('field-choices').innerHTML=offers.map(key=>{
     const mod=fieldMods[key];
-    return '<button type="button" class="route-choice'+(index===0?' primary':'')+'" data-field="'+key+'" '+
-      (index===0?'autofocus':'')+'>'+mod.name+'<span>'+mod.detail+'</span></button>';
+    return '<button type="button" class="route-choice" data-field="'+key+'">'+mod.name+'<span>'+mod.detail+'</span></button>';
   }).join('');
   get('field-menu').showModal();
   syncTelegramNav();
@@ -2610,10 +2636,11 @@ function chooseFieldMod(key){
   syncTelegramNav();
 }
 function routeReward(r){
-  return [28,52,90,135,185][r.missionIndex]*difficulties[r.difficulty-1].reward;
+  return [10,22,35,50,66][r.missionIndex]*difficulties[r.difficulty-1].reward;
 }
 function advance(r) {
   r.cleared++;
+  bankMutagen(r,[2,3,4,5,6][r.missionIndex]*difficulties[r.difficulty-1].reward);
   r.eventPriority=0;
   if(r.riskySector){
     const reward=routeReward(r);
@@ -2679,6 +2706,10 @@ function enterNextSector(r,risk=false){
   if(r.tank?.hp>0) {
     const repair=7+state.guard*8;
     r.tank.hp=Math.min(r.tank.max,r.tank.hp+(r.difficulty===3?Math.floor(repair*.45):repair));
+  }
+  if(r.missionIndex>0&&r.difficulty<3){
+    const recovery=r.difficulty===1?16:8;
+    for(const actor of survivors(r)) actor.hp=Math.min(actor.max,actor.hp+recovery);
   }
   if(r.wave===3){r.room++;r.wave=0;}
   prepareSector(r);
@@ -2760,7 +2791,13 @@ function tick(dt) {
     updateEvacuation(r,dt);
     separateBodies(r,survivors(r),22,dt);
     gatherMutagen(r,dt);
-    if(!r.enemies.length) nextFight(r);
+    if(r.pendingReinforcement){
+      if(r.time>=r.pendingReinforcement.arrivesAt) spawnReinforcement(r);
+    } else if(!r.enemies.length) nextFight(r);
+    else if(r.backups&&!r.bossWaiting&&!r.sectorFeature&&!r.capsules.length&&r.time>=r.overlapAt&&
+      r.enemies.length<=[2,3,4,5,6][r.missionIndex]){
+      queueReinforcement(r);
+    }
   } else transition(r,dt);
   if(run) updateHUD();
 }
@@ -2771,27 +2808,15 @@ function updateHUD() {
   const r=run;
   if(!r) return;
   updateBossHUD(r);
-  const name=sectorLabel(r);
-  const sector='Сектор '+(r.room*3+r.wave)+' / '+r.total+' · '+(r.riskySector?'Рискованный отсек':r.sectorLayout.name);
-  if(get('stage').textContent!==name) get('stage').textContent=name;
-  if(get('wave').textContent!==sector) get('wave').textContent=sector;
-  const capsuleStatus=get('capsule-status');
-  const event=r.sectorEvent;
-  const feature=r.sectorFeature;
-  const detail=r.capsules.length?'Капсулы '+r.capOpened+' / '+r.capsules.length:
-    event?sectorHazards[event.kind].label+(event.aim?' · опасность':''):
-    feature?.kind==='dark'?'Аварийное освещение':
-    feature?.kind==='evac'?(feature.drone.status==='moving'?'Эвакуация дрона · '+feature.drone.hp+' / '+feature.drone.max+' ХП':
-      feature.drone.status==='safe'?'Дрон эвакуирован':'Эвакуация сорвалась'):
-    feature?.kind==='carrier'?{running:'Носильщик уходит к шлюзу',escaped:'Носильщик скрылся',caught:'Контейнер носильщика выбит'}[feature.outcome]:'';
-  capsuleStatus.hidden=r.phase!=='fight'||!detail;
-  if(!capsuleStatus.hidden&&capsuleStatus.textContent!==detail) capsuleStatus.textContent=detail;
+  const progress=get('sector-progress');
+  const sector='Сектор '+(r.room*3+r.wave)+' из '+r.total;
+  if(progress.textContent!==sector) progress.textContent=sector;
   const lootToast=get('loot-toast');
   const rewardMessage=r.bossLootDrop?.toastUntil>r.time?'Получено · '+r.mission.reward:
     r.routeToastUntil>r.time?'Найден тайник · +'+r.routeBonus+' мутагена':'';
   if(rewardMessage&&lootToast.textContent!==rewardMessage) lootToast.textContent=rewardMessage;
   lootToast.hidden=!rewardMessage;
-  const health=roster(r).map(actor=>heroData[actorRole(r,actor)].name+' '+Math.ceil(actor.hp)+'/'+actor.max).join(', ');
+  const health=roster(r).map(actor=>heroData[actorRole(r,actor)].name+' '+combatPoints(actor.hp)+'/'+combatPoints(actor.max)).join(', ');
   const summary=get('team-health');
   if(summary.textContent!==health) summary.textContent=health;
 }
@@ -2952,6 +2977,14 @@ function paintActor(e,r){
     fill(ctx,e.x-1,e.y-height-9,2,2,'#ff9a6d');
   }
   if(e.kind==='ward') fill(ctx,e.x-7,e.y-17,14,2,'#63f0c9');
+  if(e.kind&&!boss&&e.hp>0&&shieldedByWard(r,e)){
+    const x=e.x,y=e.y-height*.45;
+    ctx.beginPath();
+    ctx.ellipse(x,y,15,height*.48,0,0,Math.PI*2);
+    ctx.strokeStyle='#75edc9';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
   if(e.taunted>0&&r.tank?.hp>0) fill(ctx,e.x-2,e.y-height-9,4,3,'#84dafa');
   if(guardedBoss(r,e)) {
     fill(ctx,e.x-20,e.y-height-6,40,1,'#7ecbf3');
@@ -3428,6 +3461,26 @@ function paintBroodShield(r){
   }
   ctx.restore();
 }
+function paintReinforcementCue(r){
+  const pending=r.pendingReinforcement;
+  if(!pending) return;
+  const phase=clamp(1-(pending.arrivesAt-r.time)/pending.visibleFor,0,1);
+  ctx.save();
+  ctx.globalAlpha=reducedHangarMotion?.matches ? .86 : .62+.32*Math.sin(Math.PI*phase);
+  for(const [,x,y] of pending.arrivals){
+    const left=x<W/2;
+    const edgeX=left?19:W-19;
+    const toward=left?1:-1;
+    fill(ctx,edgeX-4,y-9,8,18,'#261a19');
+    fill(ctx,edgeX-2,y-7,4,14,'#ffc365');
+    fill(ctx,x-8,y+3,16,2,'#ffb454');
+    for(let step=0;step<5;step++){
+      fill(ctx,edgeX+(4+step)*toward,y-4+step,3,2,'#ffe2a2');
+      fill(ctx,edgeX+(4+step)*toward,y+4-step,3,2,'#ffe2a2');
+    }
+  }
+  ctx.restore();
+}
 function paintArena(r) {
   if(hasBackground) ctx.clearRect(0,0,W,H);
   else floor(ctx);
@@ -3494,6 +3547,7 @@ function paintArena(r) {
   paintFallenEnemies(r);
   paintEnemyDebris(r);
   paintDarkness(r);
+  paintReinforcementCue(r);
   paintTeamHealth(r);
   paintMutagenLabels(r);
   if(r.phase==='enter'){
@@ -3598,23 +3652,21 @@ function finish(won,retreated=false) {
     +(newDifficulty?'<li>Открыта сложность «'+difficultyName(r.difficulty+1)+'»</li>':'');
   const setback=!won&&!retreated&&r.lastDamageSource?'<p>Последний удар — '+damageNames[r.lastDamageSource]+
     '. Первый урон на волне '+r.firstDamageWave+'.</p>':'';
-  const tankReport=r.tank?'<p>Танк поглотил '+r.tankBlocked+' урона и нанёс '+r.tankStrikes+
+  const tankReport=r.tank?' <p>Танк поглотил '+combatPoints(r.tankBlocked)+' урона и нанёс '+r.tankStrikes+
     ' ударов по области'+(r.tank.hp>0?'':'. Пал в бою')+'.</p>':'';
   const evacReport=r.evacResult==='safe'?
     '<p>Дрон эвакуирован · собрано '+(r.evacBonus||0)+' мутагена</p>':
     r.evacResult==='lost'?'<p>Дрон выведен из строя.</p>':'';
   const routeReport=r.routeBonus?'<p>Тайник рискованного отсека · +'+r.routeBonus+' мутагена</p>':'';
   const fieldReport=r.fieldMod?'<p>Модификация · '+fieldMods[r.fieldMod].name+'</p>':'';
-  const replay='<button'+(won?'':' class="primary"')+' data-replay="'+r.difficulty+'" data-replay-mission="'+r.missionIndex+'">Повторить вылазку</button>';
-  const onward='<button'+(won?' class="primary"':'')+(newMission?' data-mission="'+next+'">Следующая миссия':
-    ' data-panel="map">К карте')+'</button>';
-  const actions=won?[onward,replay]:[replay,onward];
+  const replay='<button'+(won?'':' class="primary"')+' data-replay="'+r.difficulty+'" data-replay-mission="'+r.missionIndex+'" data-replay-speed="'+r.speed+'">Повторить вылазку</button>';
+  const hangarButton='<button data-close'+(won?' class="primary"':'')+'>В ангар</button>';
   show(title,'<div class="report-content"><div class="report-summary"><p>'+r.mission.name+' · '+difficultyName(r.difficulty)+
     '</p><dl class="report-stats">'+statList+'</dl>'+(record&&record!=='Район зачищен'?'<p>'+record+'</p>':'')+
     '</div><div class="report-rewards">'+epilogue+reward+(unlock?'<ul class="report-unlocks">'+unlock+'</ul>':'')+
-    '<details class="report-more"><summary>Подробности боя</summary><p>Получено урона: '+r.damageTaken+
+    ' <details class="report-more"><summary>Подробности боя</summary><p>Получено урона: '+combatPoints(r.damageTaken)+
     ' · Уклонения: '+r.dodges+'</p>'+setback+tankReport+routeReport+evacReport+fieldReport+'</details></div></div>'+
-    '<div class="report-actions">'+actions.join('')+'<button data-close>В ангар</button></div>');
+    '<div class="report-actions">'+replay+hangarButton+'</div>');
 }
 function show(title,html) {
   const dialog=get('dialog');
@@ -3633,44 +3685,74 @@ function show(title,html) {
   if(!dialog.open) dialog.showModal();
   syncTelegramNav();
 }
-const skillArt={"cartridges":"data:image/webp;base64,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","barrel":"data:image/webp;base64,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","scope":"data:image/webp;base64,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","suit":"data:image/webp;base64,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","shield":"data:image/webp;base64,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","blade":"data:image/webp;base64,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","boot":"data:image/webp;base64,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","cloak":"data:image/webp;base64,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","lightning":"data:image/webp;base64,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","injector":"data:image/webp;base64,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","capacitor":"data:image/webp;base64,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","servo":"data:image/webp;base64,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"};
+const skillArt={"reflex":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAi0lEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCGGD/u/Lx4rIMQjZ/RBE2CBMhKkHlyBhgzB9RI5BaJ6iyEWDyWuYUUaOQRBTcAUc1tSExSA8piAnHEyzGHAlMIIZDc0sBuLjBb9KWhpEPMJeHmFN0PgRUbmfOuURQYfgM4g6RS3ZcUc4r5FqEAANslgYmj5XrwAAAABJRU5ErkJggg==","bossRounds":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAf0lEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCPkG/d+XT5pBaBqINQhTNVAFplm4xLEbBFENsQ1ZDy5xfAaRxMZuENxaeBDA9ZBsEC6RUYNoYBAmwipFwCDkbI2Wv7EK0sxrcBtI9RrO3E+q12hZsFGnqCWmDCO/FiHJIACM22HFqhLYbAAAAABJRU5ErkJggg==","boostCycle":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoElEQVR42s3UwQmAMAwF0GzgzREcw4G8OIobuZoKQg35PyaWHIScSvOo9acyjFNJSTG0LXOrTBvuf6C+g8TQsa+0vkFXgz68LmNZCBWzojvxXARCxUCeJaGCELWEfnAI4aKEDb+E7hsxOeqB9A22Pf1QG7EY8sKWCa2EAckofETeLS+0fGj1bzKFO4NnxJv+b8+Ip6BFoJqnlsY/GYVi6ATHS1NzrNspVQAAAABJRU5ErkJggg==","acidPlate":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAArklEQVR42rWVzQmAMAyFs4E3R3ATp9INXNFFvCkU4iN/TaCFd6jB96VNTaRl3YaIBoP242JlbPr9H+R5zvtp8ogRiM2fODMG+yBhxgQYZJwE4V70MfW5Giu6NbMWmeA0kN6zCdIVIC8V3pGQiXZBeEdCNVA1MhOk660f9bdGXgehWazNxqSgv9mPC6+9KZ4V2FABpT9GmOVRCvOosYJMWVA3zZxRG8gbsuW/SBL0Aj65aESN2HJfAAAAAElFTkSuQmCC","tankRadius":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAp0lEQVR42sWVyw2AMAxDswE3RmATpoINWJFFuHGoVKI4cUpVgZRTP0+u47YyzcuQksGgdTtqtWzD9Q+oT8jnoP28TCWgCKG9KOXifJBGRGdBliAl7V2VxkCIiDxKQGYabaoLGKhsI1w9Yk4nqRwiuQmECUKnQpBWiwky98vodboWRQ6DlgTSjUkaNCGpc92JssoubeTOH89I2jIGGvPUNsb39S/SAboBJV2BUHj1SQwAAAAASUVORK5CYII=","tankCycle":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAeklEQVR42mPgF1OjCmKgskGu1d1wRIw2TPUIg8hzCO0Nqrnzk3iExSA0z8OVIocFJiIca3ClaPaTH/3I9uM3kXA6wvQmaQZhDSZyvAbXOYjDCNmZo2GE07OEwwi//5EDi165H87Hn90xcz8Wg6hT1OIKGjhJUS1CkkEA29GTeluN0BwAAAAASUVORK5CYII=","bladeHealth":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnUlEQVR42mPgF1OjCmKgskH9/lFwRIw2TPUIg8hzCD6D/vcuIKgfroaAQRCEywhkWXSDkNXBPQ/Xg4yQZfHFGrI0sh7MqMBnEEQDnhBBC2ZkcQaCGogUZ8BjCX6D0JzPgN/BuAzCDAQGXJ7HjzCDkoFgDsCKiM20+BM3VtnhbxBa+BGMNaKKEZJijSKDCBRs1ClqsQYnMklmLUKGQQB/vnKkkS7BOgAAAABJRU5ErkJggg==","bladeTempo":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAiUlEQVR42mPgF1OjCmKgskH9/lFwRIw2TPUIg8hzCGGD/vcuwIrIMQjZ/RBE2CBMhKkHlyBhgzB9RI5BaJ6iyEWDyWuYUUaOQRBTcAUc1tSExSA8piAnHEyzGHAlMIIZDc0sBuLjBb9KWhpEPMJeHmFN0PgRUbmfauUR+QZRp6glNY7Ir0UIGgQAU8VPIn5RHmoAAAAASUVORK5CYII=","bladeAmbush":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlUlEQVR42mPgF1OjCmKgskH9/lFwRIw2TPUIg8hzCO0N+t+7gHiExSA4Akoj+x8PghiEM9bQpPEg+hqEFhCYwUesQViTFZrgEA0jKhiEmUBwmYKWGRiwpnq4WZhJGaspOIsRuB601IzH+wy4siIuD2J1Dr7cDzELE6GpJKoYwZpXSSuP8Od7AgZRp6glmCwJJi6qGQQAQARoUuPMh2sAAAAASUVORK5CYII=","psiHealth":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAArklEQVR42rWU3Q2AMAiE2cA3R3All3AXB3AZN1OTJnjhr5C0yT1UUj7aIkfLug0RDQYd+8nKpOn9P8jLua+nySNGIE7+xJUx2AeJZCyAQcZJEJ5FX1Pfq7GirplvkQlOA+kzmyD9AuSVwh4JmWgXhD0SqoGqkZkg/d76U/9r5E0QJou1OZgUzDfn48Ibb4q9AgcqoPRthFkepeBHjRVUyoK6ZeZYrWeysQFku1YCvS5xcF4WMZrKAAAAAElFTkSuQmCC","psiRelay":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlklEQVR42s3U2QmAMAwA0GzgnyO4kku4iwN0GTdTQYghl0moIuSnoX30SAPDOHUJ6Awt84oRWSbn31BtI/+H3nq1re1+hKBzHn0UDJqXFqiKpdOrYRYUlItgFociCg4TkKMkIF+JQo+KB9H7iyg0CbLk/QNaSVC/Dy1iNsSk2Y+sdqPG520kuB0d6tNq1QJhZVXsR1noAE3dd4qryiAWAAAAAElFTkSuQmCC","psiShot":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoElEQVR42s2UzQ2AMAiF2cCbI7iSS7iLA7iMm6lJk9rA489wMOHUwNdH+4CmeSkJKgZt694jUibzX9A3If8H2XEel4z0rz0149O2SIMaBZ4nQCOFNZUAMS3MOFGQ1lGuNZcSAjWKzHNvIphhsDS9xGza6yHL6Jqk5TWW/XYEx0ey3B/AQytZGsWf/qCW0BqxtagguGqNjvCqdU1sW7QSdAMhZExYbNRCKQAAAABJRU5ErkJggg==","medicHealth":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnUlEQVR42mPgF1OjCmKgskEBTZFwRIw2TPUIg8hzCD6D+l7OJ6gfroaAQRCEywhkWXSDkNXBPQ/Xg4yQZfHFGrI0sh7MqMBnEEQDnhBBC2ZkcQaCGogUZ8BjCX6D0JzPgN/BuAzCDAQGXJ7HjzCDkoFgDsCKiM20+BM3VtnhbxBa+BGMNaKKEZJijSKDCBRs1Clq8QQnhE2w2KSaQQC/D2i86aYpmgAAAABJRU5ErkJggg==","medicArmor":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAo0lEQVR42mPgF1OjCmKgskEBTZFwRIw2TPUIg3Dp6Xs5H4JwmUjAILh+uM1YTcRnEFw1mk/hXGTj0A1CNgJ/YKE5EHusYVWBK9TQLGPAZSdmiKCFGgnpCM1E/ImDgfgkQ0LKJhg6eBQzEBM6eNIX4cDGtBNX+iIQRpgJGn9gDaHAJjNlY2ZOIlM2UeURMSmbhIKNYGFAm6IWV6CikWTWIiQZBACuanNSHWbxGgAAAABJRU5ErkJggg==","medicShot":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoklEQVR42s2VzQ2AIAyFu4E3R3Aer67jAKzgfG6hCQmSvv4SDiYvHEz72UIf0LJuU0STQft5NEXSMP4DjRXyf5Ctcl+o9Km9Of3WVqVBlSJ+T4B6CmsqAWK1sMGJgrSOcq25lBCoUjDO/ROJEQZLq5fYmLZ8kWV0TTjyGsveOxLtgyz3BGTTIkuj+O4P1uKAenOiYx2QHRe9asXBxTX9igyAHrlVQ0HfeR+IAAAAAElFTkSuQmCC","rate":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAkElEQVR42q3UwQ2AIAwF0L+BN0dwDAfy4ihs5GpKYqIEPqUtTRoulAcNFCzrFhIIhtKxf6FZ1ub/0HDxfZ1UtEFZoTk2qKcQyKeUxWJGKacQokjQm5rH9rLoBtC/FPmYttKEYmFVaLFdiO4stxEmL6sL+ZQacis15FZUTSsr2u4fnkULDSsiUMxXqwz6poOhB1iGHhg7cAwOAAAAAElFTkSuQmCC","slow":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAn0lEQVR42s2UwQ2AMAhF/wbeHMExHMiLo7iRq2kTEyRQgRIOJqQneX7K78c0LyWFYtCxrVSRNv39C8oJ+T8oWNe5F2ytUdr/v1gYlfOwNA7BQR45fPeChcggnEL9ggVbDj91P981DDnUJszRvXIYFMNioTsyzNK1Yh+kB0nGSFCOA0rLkY+WXBss6/XzxHLLjxG338qjmqgN7m44jxKgG9JKQ3Y6H6SRAAAAAElFTkSuQmCC","vitality":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAl0lEQVR42t1UwQ2AQAjrBv4cwTEcyI+juJGr6cMECdwVNPgx6euglWs9MIxTCVAstC2zIEPz/bfQu0GY0LGvIV96AqELPQldtUK6Ty4vHA1dZanpsub4KJjQRSCOGJv1OUJC8hzkI1zIjA8+cE/Im4De5Tm8lQhfQBPZR8t/7mb1/0LGvzC11Bp5lNqXi61m1SZNJSGUCZ346GVa1q3VHgAAAABJRU5ErkJggg==","power":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoUlEQVR42s2VzQ2AMAiF2cCbIziGA3lxlG7kamrSpDbw+Gt6MHmnBj6h8Cot6zZFNBlUjr0pkibjP9BYIf8H2bqvUyo9tTenv9qqNKhS4HkC1FNYUwkQq4UtThSkdZRrzaWEQJUi49wvEYwwWFq9xNa05UOW0TXJlddY9t0RtI9kuRPAppUsjeK7P1iLA+rNKR3rgOy46FMLFxeOP/cXGQA9/lRHQU1R04QAAAAASUVORK5CYII=","taunt":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAdklEQVR42mPgF1OjCmKgskGu1d1wRIw2TPUIg8hzCF0MqrnzkyDCaRAu/2MioClYnY/FIGQLiZclzSBcziHZIIjXqGAQHrOwG0RSxOEzCH/EYc0AJHuNhEw7ahDO8ghXxJOT+4mJZjqWR9QpaoksN/AEGdUMAgATnk0C+U/cOQAAAABJRU5ErkJggg==","guard":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnElEQVR42t2UwQ2AMAhF2cCbI7iJU+kGrugi3jw0QQLlQ5WTyT+Ywn+lYEvTvJSIikHrdrAyNpv/gN4VgkD7eYV+zglATR5CRjVI5vHh2SMlo2hqMiw9dhQI1AygI6rNcp1CQ3KdwCYYpMonXLAHsk0g7/BYtpUU3oCuspcW/9zd6P9Bqn/h1FLPyNDUPoGCh63mqQXt9L6Hp5YE3e+Ygmgc24B+AAAAAElFTkSuQmCC","impact":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAvUlEQVR42rVV2w2AMAhkA/8cwU2cSjdwRRfxzyYkSDjAttaEGMPjhN4VaZqXIUaDgdbtEKspw/wHqK+R/4H288Js1+kD6RpThp4q1soXdGV5YU8P/bqYn4iFbZI7tmCZs+N6NsOPL0hpxLQg2sFhKeLCpGrtYTvZFUkO2A2Fo0USjULUhIL6CIFyFK3mjH5hXZshLopStBxwq2j6Mfpy+7XE3ZyGNWIk/mkfNayRfNWiM1y1SSOGuJ6/SBPQDYwYa0Sc5LZZAAAAAElFTkSuQmCC","bladeForce":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoElEQVR42q2UwQ2AMAhF3cCbI7iOd3cyruCmatLkS6DpByQhPZD28aHANC9riU3FoHPbYZ5n9v4Hikq4j+u1XyAg8iAgQNGgEAKe8K8pBDwZEPVkQFaOC2SfWTkcpCiqdzgIMWVwW3IOam2C4AMhPLXGokJ4arJ9k2tEZgRdYZCiyBy9+6hbZjrSo+n314WA5PbrGgHVrNpuZ8tzMGXFoAfRVElq671XrwAAAABJRU5ErkJggg==","bladeVeil":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAjklEQVR42mPgF1OjCmKgskH9/lFwRIw2TPUIg8hzCB0N+t+7ABfCZxCmfuRQQENYTWRAM4VIb0LUIJvFgCaN1TY8rsaXjuC24QkjTFczEEwmWBHtUzbWgCBJfCQaBElTmKbgSq4M+JMvsll4TCGc++Fm4TKFhGIEYhYem0goj/BbQ5uiliCChxSltQhBgwCZIEL25b15dAAAAABJRU5ErkJggg==","bladeArmor":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoUlEQVR42tWUuw2AMAwFvQEdI7AOPTshVmBTKJCM5edfkBskNyDnHC6P0DQvLUXNoGPduCrLsP8FeWuu/XzKIyYgXs+TTWIE4m71pfwocRokEbEstUH71MwOz5oaRt5MNKKsDeRIEeNwUD0yA8lO7QTNVLET5CuXjTO9fCWOMNCxrB/J/phs/DmLyS7dR5VkJyB5AWIloJ6rFnWab4JDaAPdlIaESZw/auoAAAAASUVORK5CYII=","psiForce":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAo0lEQVR42q2U0Q2AIAxEbwP/HMGVXMJdHMBl3ExJSLCB0juVpJ/l0eOuYJqXIYXBoG3dSynH2v4HRA+fx+US34ESZQAoIVKDBKKUnjTVNUuJp4ZCoeNEoGqE/NhVcVArxAbHTRwUitIANy+BhN41CLKfy4KCYVX7qWSI+/UrRwVEKVIgFQpZ2mxZTOHbr1BUkKLIAVXBp4r8r5b+rcW+j67poBvm3FF/8zg85QAAAABJRU5ErkJggg==","psiChain":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAi0lEQVR42mPgF1OjCmKgskE54f1wRIw2TPUIg8hzyOA3iCR0YPZ/ZITFIKwqsBoED2mcBmGqwGoQJpuBoApKDcLlKIirSQsjrAg5KWJJkJjpFR5SaGwy8xqyTvxpjYFgkiEm+IkyiJiURZTXiCwYaFAeDe5iBDNB4QopLAZRp6jFmnwwExGeFEA1gwA6ymL7B5vA/wAAAABJRU5ErkJggg==","psiCycle":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAeklEQVR42mPgF1OjCmKgskE54f1wRIw2TPUIg8hzCO0NOjD7P/EIi0FonocrRQ4LTEQ41uBK0ewnP/qR7cdvIuF0hOlN0gzCGkzkeA2ucxCHEbIzR8MIp2cJhxF+/yMHFr1yP5yPP7tj5n4sBlGnqMUfQGgk+SmbGIMAmm+clOGXEEgAAAAASUVORK5CYII=","medicForce":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAeklEQVR42mPgF1OjCmKgskEBTZFwRIw2TPUIg8hzCH0N6ns5HxMRMAgrAmpDDgsgwjSIqFjD1DYQBuEPETyyDHgSCGYM4AkvBuIdj1/lyDKIHrGGltZpmSBxZVqCIjTL/WgGoYUUnoDDYhB1ilo8YQFhI5MkFCNkGAQA6J5NWhlGFrAAAAAASUVORK5CYII=","medicReach":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnklEQVR42sWV0QmAMAxEbwP/HMF5/HUdB3AF53MLBUGLl1xSqApBaMk9SC6p6PqhSaAxaJynKzIyzr9BQrZsqyB+BTrEXigQU8ou8DHl2ikTpZkshBSzR8yC17zwMgAJg7Kg0CCdA3NYvSkXOS+UJkCZS4S+miCeEphmP5R85PbBW0Wxa+ZYuUsrdu2nZyRcERfU5qkVFfG3+i9SBdoB7vZfEaVs3rwAAAAASUVORK5CYII=","medicCycle":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAeUlEQVR42mPgF1OjCmKgskEBTZFwRIw2TPUIg8hzyOA3CCvqezkfKyI51pBDFI6INYig5bgUMOB3BUFn0ixB0twgIqOMsEGYsTbQXiPfIJqkI6wGEUhHWEORmLxGVO7HmtfQVBIwCJcRRBlEnaIWM3TwkCSkIzIMAgD6eU3iS8CMqQAAAABJRU5ErkJggg==","rifleReserve":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAArklEQVR42q2U0Q2AMAhEu4F/juAYDuSPo7iRq2kTEiSF3hXThI/mAq/NFSjLuk2JMhl0HbvGSJnP/0D/HsJBz32GlY1OQDW7Kp7l9RbksyWpnqVMDlYnv6bZ9s6eSEDAUZDJQYOuE1DP9QRI3FWngRiD9H7buFqpore/hNb6rrOVntId2pAFKGj6QWen10jDAhS+j5SFKUNrJPyjxBqhI/IHlFtsc1ZtKsLRmwZ6AfyPQ6MUeawIAAAAAElFTkSuQmCC","rifleFeed":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAe0lEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCO0N+r8vn3iExSA0z8OVIocFJiIca3ClaPaTH/3I9uM3kXA6wvQmaQZhDSZyvAbXOYjDCNmZo2GE07OEwwi//5EDi165H87Hn90xcz8Wg6hT1GIGCv4gIzbWyDAIAABYghtjm8X1AAAAAElFTkSuQmCC","riflePierce":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAiklEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCO0N+r8vn0iE3SA4AqpA9j8EYQrCDcIZa5gqIKYQVEaUQZhBQ7JBWJ1DpkHUcRHEOcT4l3AYwaMJWYocg7AGFkUGUeo1rHFHvkHkBDYmggc2Zl7DUh5hFjT4Eb2KESoYRJ2ilpi0g1+cagYBAIAkXQ4pnP/SAAAAAElFTkSuQmCC","riflePunch":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAfUlEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCH0N+r8vHw/CbhDBgAAioGZkNoFYw2otXAorG6dBuGKQZINw+XTUIGrHGlraId8gUlM2UQahuQ6PY3EahN8tWN2FPdPidwtWp9G4GCE+dLAYRJ2iFmsixpXKsYpTzSAAhZh6zaC98cUAAAAASUVORK5CYII=","rifleVent":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAdUlEQVR42mPgF1OjCmKgskH9WXZwRIw2TPUIg8hzCFEG/d+XT5BLM4OwImIMIhxrQHXIzsTPxWkQqabgNAhNHX4uARcRzx2hBlEa2ECrSEL4DELO1vgRAYModRHE28Q7B14S0bc8ItMg6hS1xJdKpCVIMgwCAHIDY3lnUjOEAAAAAElFTkSuQmCC","tankReserve":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAsUlEQVR42q2U0Q2AMAhEu4F/juAmTqUbuKKL+GcTEiSF3lHThI/mAq/NFSjLuk2JMhm0H5dGpsznf6B/D+Gg837CykYnoJpdFc/yegvy2ZJUz1ImB6uTX9Nse2dPJCDgKMjkoKTrBNRzfQAk7qrTQIxBer9tXK1U0dtfQmt919lKT+kObcgCFDT9oLOH10jDAhS+j5SFKak1Ev7RwBqhI5IC2QXog4DmrFowR8kxngZ6AR7PYhrBM1zcAAAAAElFTkSuQmCC","tankLaminate":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoklEQVR42tWUzQmAMAxGs4E3R3ATp9INuqKLePMgxPLlX+pBKIKSvtTnZ2ialyGLBoPWrfHKbJP1D8jasx/nvSxiAOL93FkleiCuhjfl2x6HoB7hy4ID6l9NrbCsQTOyekojYK2QIyD64aB8ZArJDu04xZSx4+Qrli17WvkKHMlA+7J+JPtlsuXPmUx2ah5lkl0YbOEw+GbUWlL5Kp8XclQCXZmXjnSYaE3sAAAAAElFTkSuQmCC","tankFront":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlklEQVR42mPgF1OjCmKgskGu1d1wRIw2TPUIg8hzyOA3iFaxVnPnJ35ElEFAdciRAkfI4phmMWA1BZfpyEGDZhYDGaZAjEAzC90gYkyBc0kwCI8pJBiE3xRiDSJoCj6DkMOPGFOQBRkwkzx+D+ISZMCafZATMRoXLoizPMJV3GBFdC9GiHQOdoOoU9RiTSDIJMGcRDWDAHoydz6cE17QAAAAAElFTkSuQmCC","tankPiston":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAdUlEQVR42mPgF1OjCmKgskGu1d1wRIw2TPUIg8hzCH0NqrnzEw/CbhDBgAAioGZkNoFYw2otXAorG6dBuGKQZINw+XTUIGrHGlraId8gUlM2UQahuQ6PY3EahN8tWN2FPdPidwtWpw3m8og6RS1BhD8RUdMgABVCfXpT8IgqAAAAAElFTkSuQmCC","tankRhythm":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlUlEQVR42q3UzQ2AIAwG0G8Db47gJk6lG7Cii3iTxEQbKP2jCfEg5UFTCpZ1SxlIhvajfMOyrI//IXXxed2s6IOqwsb4oJHCQDGFJosZhU4hRZGgN7R++2KxG8B+U+Rj+lITkoVXYZMdQuzOchthslhDKKa0UFhpobBialpZsXa/ehYFopXuhwLlPLXqq0r/+G62F3oAP4A4qCMt2BIAAAAASUVORK5CYII=","tankSignal":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnElEQVR42sWV0QmAQAxDs4F/juAmTqUbuKKL+KcgqJg2rVAV+uEdzYM27Ymm7UoCxaB+mI7IyDj/BAnZOC+C+BVoE3uhQEy5doGPKdd2mSjNZCGkmD1iFrzmhZcBSBiUBYUG6RyYw+pNuch5oTQBylwi9NUE8ZTANPum5CO3D94qil0zx8pdWrFrPz0j4Yq4oJqnNqzI+079RR6BVq+kc1b21wopAAAAAElFTkSuQmCC","tankReset":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoklEQVR42s3UwQ2AMAgFUDbw5ghu4lS6gSu6iDdNTCrhfwRJDyacmvKCFZBhnLqEdIbmZWuRScP7D1QrJIbW/aDxDboSdPE6jGUhVMyJzsS6CISKgTxLQgUhagn94BDCQwkTfgndL2L6qALpF2x36lAbsRjymi3TtBI2SEbhI/JueU3Lh1b/JhN4M1gj3vR/WyOeghaB+qxa2v5eH6f2URk6AStfaTIDMjJjAAAAAElFTkSuQmCC","bladeReserve":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAr0lEQVR42q2U0QmAMAxEu4F/juA6/ruTuIKbaiEQQy+9NFLIRzmS13JNUpZ1mxJlMujaD42RMsz/QP8eEoOe83YrGz0A1eyqIAv1FoTZklTPUiYHqwe/ptn2zp4YgIijJDMGDboegHquJ0DirjpNRB+k99vG1UoV0f7iWotdZyuR0h1al0UobPpJZ6fXSMMilHgfKYtThtaI+0eJNRKOyB9QbrHNWbUkcCDc0ZsGegHf60tnHv6uzwAAAABJRU5ErkJggg==","bladeEdge":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnElEQVR42s3UwQ2AMAgFUDbw5giu492dTFdwUzVpgg38Uko4mHBq7BNQoGXdUoKSobIfHJ5r+vkPiiXyJ+g+LwDNEm+Id5PntZoQ52OovVOJeqJbQZ52ilp0Ot4e6bwiEFdkKBLSOYuKjL+EeiVMKaA0tqYU3CPxgT0KhgIKgGIKGFrYo+D094YgskbaBahjAOWsWmN7cMuMAciEHmUCOmnM4Y6mAAAAAElFTkSuQmCC","bladeLunge":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAnElEQVR42r2U0Q2AIAxEbwP/HMF1/HcnwwpuqiQmlUA5WtKYXPgpfRylFMu6hQjBoLQfIktau/8DzRnxge7zCgBlSo72WDWIU94E4msAEoocTlgwUoYs2CmcBV7CnFOKPCK4nbLxJF81BdI1pNhukD2E3r34q7W3AzmzJ9UULGWupJa8BnmlzCPuYmjw33nkA8WMWjIYy9X31+ZAD1BvdIwwCWe8AAAAAElFTkSuQmCC","bladeFade":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoUlEQVR42s3UwQmAMAwF0GzgzRFcx7s7iSu4qQpCDfk/TVtyEIIHaR61/lSmeUkpSYaOdSvV0obrP2hsIzF07SetPuhp0JvXZSwLoWLe6E7cF4FQMZBnSaggRC2hHxxC+FLChl9C74mYHI1A+gTLmnGojFgMeWFrCa2EAWlR+IjULS+0fGj1bzKFK4NrxJv+vmvEU9AiUM5VS+OPz0rc0qAbf7ZfAl17tw0AAAAASUVORK5CYII=","bladeFinish":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlklEQVR42t2UwQmAMAxF/wbeHMF1vLuTuIKbqlCIJT9No+Qgwr809L82aRoM45QiJIO2eRFFbLz/Br27yPdBpo51Zz1+tctTV1TUYsGh1Ms6F5OFCEWZTRZ8ilxHOZmFLqVE2Kki8M+RiHOGnRqzzNSYC7PHuLRc/tDzM8uneA1ZWKzWZ0JwVnSHzP/HSNqoDcpszmTQCQO1QfTJ4b/UAAAAAElFTkSuQmCC","bladeRhythm":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlElEQVR42q3UzQ2AIAwG0G8Db47gOt7dybiCmyqJCTZQ+kcT4kHKg6YULOuWMpAMXftRh2VZH/9D6uLnvFnRBxWFjfFBI4WBYgpNFjMKnUKKIkFfaPn2xWI3gP2myMf0pSYkC6/CJjuE2J3lNsJksYZQTGmhsNJCYcXUtLJi7X71LApEK90PBcp5ai2vav3vu9le6AWGtS4vhfL4ewAAAABJRU5ErkJggg==","psiReserve":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAsUlEQVR42q2U3QmAMAyEu4FvjuBKLuEuDuAybqaFQgxNepdIoQ/lSL6Wy09Z1m3KKZNBx37KiaTZ+A/07yMcdF+Pm9npBFSjq2JZVu9BNroF1XtLaxetk6pJtH5zJBIQcBREclDQdQIauZ4ANXfFaSD6IHlfN65kimjtL661tut0pqUMh9ZlAQqaftDZ6TXSsQCF7yNhYUpojbg1SqwROiJ/QLnFNmfVRsZSt3iuainQC32JW8mbEY2bAAAAAElFTkSuQmCC","psiFocus":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAeElEQVR42mPgF1OjCmKgskE54f1wRIw2TPUIg8hzyOA3CCs6MPs/VkRyrCGHKBwRaxBBy3EpYMDvCoLOpFmCpLlBREYZYYMwY22gvUa+QTRJR1gNIpCOsIYiMXmNqNyPNa+hqSRgEC4jiDKIOkUtZujASWLEqWkQALP9Y/4qvEPqAAAAAElFTkSuQmCC","psiReach":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAApklEQVR42sWU0Q2AIAxEu4F/juBKLuEuDsAybqYfJNj0ei0hRJN+GIGX43pUlnWbUjIZdOxnq55juP8FjQn5HHSV21QCYgjtRS0X54M0gt0FWYKUtHdNWgRCBPMoAZlltKltiED1WMDVf8ztJJUTSO4CYYLQKQrSajFB5n0ZvU7XWOQwaEkg3ZikQZMgda47LKvRo2Xu/DpGRkBzRm3cbPPdO4/GQA8ZUX/JNYbf5QAAAABJRU5ErkJggg==","psiReset":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAoklEQVR42s3UwQ2AMAgFUDbw5giu5BLu4gAu42ZqYlIJHwolHEw4mKa8tBWgaV5Kgoqhbd1bRNJw/wflDuJD53GpMQY9CfzwPIQlIVTECs/EcykQKgKyLHIVhFSL1Au7EC6Sm/BL6H0RUUcZiL9g25OHWov5kFVskaIlt0Aiit4ifcsqWr1p+W8SgTudMWJ1/9gYsRS0FKhm1HbKH79D8ygN3ZVvbUTiwASRAAAAAElFTkSuQmCC","psiNetwork":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAkElEQVR42mPgF1OjCmKgskE54f1wRIw2TPUIg8hzCB0NOjD7Py6EzyBM/cihgIawmsiAZgqR3oSoQTaLAU0aq214XI0vHcFtwxNGmK5mIJhMsCLap2ysAUGS+Eg0CJKmME3BlVwZ8CdfZLPwmEI498PNwmUKCcUIxCw8NpFQHuG3hjZFLZ6YRgtvXCmAagYBAPmcWsKNIJDxAAAAAElFTkSuQmCC","psiPulse":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAlklEQVR42q3U2w2AIAwF0G7gnyO4kku4iwO4jJspiYk29NKXTQgfWg40pdA0LyWDiqFt3d/hWSbjP8hcfB4XFGNQU2BMDBopAMopPFn6o/BfVKJo0BPaZlksuAH5b4p+zFhqSrIUVWCyQwjurLcR/SzWEMopPZRWeiituJpWV7zdb57FgHil5TCgmqcWPjR8lt+9NzsK3XxzRBl9dJiZAAAAAElFTkSuQmCC","medicReserve":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAsUlEQVR42q2U0Q2AMAhEu4F/juA8/rqOA7iC87mFTUiQFHpXTBM+mgu8NlegLOs2Jcpk0H4eGiNlPv8D/XsIB13PHVY2OgHV7Kp4ltdbkM+WpHqWMjlYnfyaZts7eyIBAUdBJgcNuk5APdcTIHFXnQZiDNL7beNqpYre/hJa67vOVnpKd2hDFqCg6QednV4jDQtQ+D5SFqYMrZHwjxJrhI7IH1Busc1ZtTTsWISjNw30Al7CQ20PobVMAAAAAElFTkSuQmCC","medicKit":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAk0lEQVR42mPgF1OjCmKgskEBTZFwRIw2TPUIg8hzCGGD+l7Ox4VINgjZ/XBEwCBMhGk/VhcRjjXMsIe7kZzoR3MR+emIOgZB/ILsWTxmMRBpCkGzGIjxFDHiDMQ7B7+jGPCoJjJxE3YRLkSaQUSmCcIGkek1tKDF4y+0XEKv8ohI52A3iDpFLcF4gYggk2RGP0GDAMd3XSWorI66AAAAAElFTkSuQmCC","medicRange":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAqUlEQVR42sWV0Q2AIAxEu4F/juA8/rqOA7iC87mFHybY9HotEKJJY4zCy3E9QKZ5GVIyGLTuW6maaTj+BfUJ+Rx0XKepBMQQ2ounXJwP0gi2FmQJUtLeFWkRCBHMowRkfqNNZUAEeqYFXP3FrE5SOYHkKhAmCJ2iIK0WE2T2l9HrdI1FDoOWBNKNSRo0CVLnusOyGm1a5s6vx0gPaMxRyxpk3vWz4RZpAt25N2Yc4CFpSwAAAABJRU5ErkJggg==","medicReset":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAApUlEQVR42s3VwQmAMAwF0GzgzRGcx6vrOIArOJ9bKAg15P/4a+lByKk0j6o/1YZx6lLWGZrXpVRNG+5/oLaDaGg7dlrfoKvBH95XsCKESljxnXguAqESoMwyqSBELaMPLCFcNNnwS+h+IyFHLZB/g2VPO1RGTENZ2GpCazIgNQofkXcrCy0fWv+ZQuFOcY1k0//tGskUtAjU56ql8ccc47r4izRAJwbWVg8Q+M8FAAAAAElFTkSuQmCC","medicShield":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAArklEQVR42rWU0Q2AIAxEu4F/juA8/rqOA7iC87mFJiT10vYKJJDcBzb0FYpXWdZtiGQwaD8PVUua3/+DWM713EWMmIE0+ZNWxmAdZJKxAAYVZ0F4Fn9Nf6/Cyl4t7EVLcBrInzkE+Q4IK4VvZBSiKQjfyKgP1BuZCfL99p/+XxPmIEw269CYkvhb83HB7C35rEBDJZT6GFEWo3TMo8JKKrWCqmXmjNpEaC5mtJGgF5jQXHzBWd5IAAAAAElFTkSuQmCC","medicSidearm":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAl0lEQVR42q3U2w2AIAwF0LuBf47gPP66jgO4gvO5hSQkSmjpiyaEmFgONKVgWbeUgWRoP49vWJbR+B9SF1/PzYo+qChsjA8aKQwUU9pkMaO0v5CiSFANLTMtFrsB7DdFPqYvNSFZeBU22SHE7iy3ESaLNYRiSg+FlR4KK6amlRVr96tnUaC20nQoUM5TKzw09ZvO1pvthV4Aoy6o7j3jTwAAAABJRU5ErkJggg=="};
 const upgrades={
-  reflex:{role:'rifle',price:28,max:3,name:'Рефлексы',icon:'boot',requires:'vitality',description:'Каждый ранг даёт +9 п. п. к шансу попытаться уклониться от плевка.'},
-  bossRounds:{role:'rifle',price:48,max:4,name:'Тяжёлые патроны',icon:'scope',requires:'power',description:'Каждый ранг добавляет 9% к урону карабина по боссам.'},
-  boostCycle:{role:'rifle',price:39,max:3,name:'Холодный ствол',icon:'barrel',requires:'rate',description:'Каждый ранг сокращает перезарядку скоростного огня на 1,4 секунды.'},
-  acidPlate:{role:'tank',price:79,max:3,name:'Антикислотные пластины',icon:'shield',requires:'guard',description:'Каждый ранг снижает оставшийся после брони урон от кислоты на 10%.'},
-  tankRadius:{role:'tank',price:88,max:3,name:'Широкая волна',icon:'capacitor',requires:'impact',description:'Каждый ранг добавляет 4 к радиусу удара по области.'},
-  tankCycle:{role:'tank',price:92,max:3,name:'Гидропривод',icon:'servo',requires:'impact',description:'Каждый ранг сокращает перезарядку удара по области на 0,35 секунды.'},
-  bladeHealth:{role:'blade',price:88,max:4,name:'Боевая выносливость',icon:'suit',description:'Каждый ранг добавляет дамагеру 14 здоровья.'},
-  bladeTempo:{role:'blade',price:121,max:3,name:'Быстрые выпады',icon:'boot',requires:'bladeForce',description:'Каждый ранг увеличивает скорость обычных атак на 11%.'},
-  bladeAmbush:{role:'blade',price:135,max:3,name:'Удар из тени',icon:'cloak',requires:'bladeVeil',description:'Каждый ранг повышает множитель урона в невидимости на 0,12.'},
-  psiHealth:{role:'psi',price:126,max:4,name:'Защита разума',icon:'shield',description:'Каждый ранг добавляет псионику 13 здоровья.'},
-  psiRelay:{role:'psi',price:166,max:3,name:'Проводник цепи',icon:'lightning',requires:'psiChain',description:'Каждый ранг уменьшает потерю урона молнии на каждом скачке на 2,5 п. п.'},
-  psiShot:{role:'psi',price:138,max:4,name:'Импульсный разряд',icon:'capacitor',requires:'psiForce',description:'Каждый ранг добавляет 3 урона обычному выстрелу псионика.'},
-  medicHealth:{role:'medic',price:148,max:4,name:'Полевой скафандр',icon:'suit',description:'Каждый ранг добавляет медику 15 здоровья.'},
-  medicArmor:{role:'medic',price:165,max:3,name:'Бронежилет',icon:'shield',requires:'medicHealth',description:'Каждый ранг снижает входящий урон медика на 6%.'},
-  medicShot:{role:'medic',price:157,max:4,name:'Тактический пистолет',icon:'cartridges',description:'Каждый ранг добавляет 3 урона обычному выстрелу медика.'},
-  rate:{role:'rifle',price:20,max:4,name:'Темп огня',icon:'barrel',description:'Каждый ранг добавляет 18% к базовой скорострельности.'},
-  slow:{role:'rifle',price:25,max:4,name:'Тормозящие патроны',icon:'cartridges',requires:'rate',description:'Выстрелы замедляют врагов на 36%. Каждый ранг продлевает эффект.'},
-  vitality:{role:'rifle',price:24,max:7,name:'Защита скафандра',icon:'suit',description:'Каждый ранг добавляет стрелку 17 здоровья.'},
-  power:{role:'rifle',price:34,max:7,name:'Усиленные заряды',icon:'cartridges',description:'Каждый ранг добавляет 20% к базовому урону карабина.'},
-  taunt:{role:'tank',price:55,max:1,name:'Провокация',icon:'capacitor',description:'Задетые ударом по области мутанты переключаются на танка на 2,75 секунды.'},
-  guard:{role:'tank',price:70,max:6,name:'Усиленная броня',icon:'suit',description:'Каждый ранг даёт +25 здоровья, улучшает поглощение урона и ускоряет ремонт между волнами.'},
-  impact:{role:'tank',price:64,max:6,name:'Ударная волна',icon:'servo',requires:'guard',description:'Каждый ранг добавляет 16% к урону удара по области.'},
-  bladeForce:{role:'blade',price:83,max:7,name:'Острый клинок',icon:'blade',description:'Каждый ранг добавляет 6 базового урона в ближнем бою.'},
-  bladeVeil:{role:'blade',price:92,max:3,name:'Долгая тень',icon:'cloak',description:'Каждый ранг продлевает невидимость на 0,55 секунды.'},
-  bladeArmor:{role:'blade',price:106,max:6,name:'Гибкая броня',icon:'suit',requires:'bladeForce',description:'Каждый ранг поглощает 7% входящего урона.'},
-  psiForce:{role:'psi',price:108,max:7,name:'Сильный разряд',icon:'lightning',description:'Каждый ранг добавляет 5 базового урона цепной молнии.'},
-  psiChain:{role:'psi',price:126,max:3,name:'Ещё один скачок',icon:'lightning',description:'Каждый ранг позволяет молнии задеть на одну цель больше.'},
-  psiCycle:{role:'psi',price:141,max:3,name:'Быстрый заряд',icon:'capacitor',requires:'psiForce',description:'Каждый ранг сокращает перезарядку молнии на 0,49 секунды.'},
-  medicForce:{role:'medic',price:134,max:7,name:'Сильная доза',icon:'injector',description:'Каждый ранг восстанавливает ещё 8 здоровья за одно лечение.'},
-  medicReach:{role:'medic',price:158,max:3,name:'Дальняя помощь',icon:'scope',description:'Каждый ранг увеличивает радиус лечения на 21.'},
-  medicCycle:{role:'medic',price:175,max:3,name:'Частые инъекции',icon:'injector',requires:'medicForce',description:'Каждый ранг сокращает перезарядку лечения на 0,6 секунды.'},
+  reflex:{role:'rifle',price:28,max:3,name:'Рефлексы',requires:'vitality',description:'Каждый ранг даёт +9 п. п. к шансу попытаться уклониться от плевка.'},
+  bossRounds:{role:'rifle',price:48,max:4,name:'Тяжёлые патроны',requires:'power',description:'Каждый ранг добавляет 9% к урону карабина по боссам.'},
+  boostCycle:{role:'rifle',price:39,max:3,name:'Холодный ствол',requires:'rate',description:'Каждый ранг сокращает перезарядку скоростного огня на 1 секунду.'},
+  acidPlate:{role:'tank',price:79,max:3,name:'Антикислотные пластины',requires:'guard',description:'Каждый ранг снижает оставшийся после брони урон от кислоты на 10%.'},
+  tankRadius:{role:'tank',price:88,max:3,name:'Широкая волна',requires:'impact',description:'Каждый ранг добавляет 4 к радиусу удара по области.'},
+  tankCycle:{role:'tank',price:92,max:3,name:'Гидропривод',requires:'impact',description:'Каждый ранг сокращает перезарядку удара по области на 0,35 секунды.'},
+  bladeHealth:{role:'blade',price:88,max:4,name:'Боевая выносливость',description:'Каждый ранг даёт +1 здоровья.'},
+  bladeTempo:{role:'blade',price:121,max:3,name:'Быстрые выпады',requires:'bladeForce',description:'Каждый ранг даёт +9% к базовому темпу атак.'},
+  bladeAmbush:{role:'blade',price:135,max:3,name:'Удар из тени',requires:'bladeVeil',description:'Каждый ранг повышает множитель урона в невидимости на 0,12.'},
+  psiHealth:{role:'psi',price:126,max:4,name:'Защита разума',description:'Каждый ранг даёт +1 здоровья.'},
+  psiRelay:{role:'psi',price:166,max:3,name:'Проводник цепи',requires:'psiChain',description:'Каждый ранг уменьшает потерю урона молнии на каждом скачке на 2,5 п. п.'},
+  psiShot:{role:'psi',price:138,max:4,name:'Импульсный разряд',requires:'psiForce',description:'Каждый ранг даёт +0,3 урона обычному выстрелу.'},
+  medicHealth:{role:'medic',price:148,max:4,name:'Полевой скафандр',description:'Каждый ранг даёт +1 здоровья.'},
+  medicArmor:{role:'medic',price:165,max:3,name:'Бронежилет',requires:'medicHealth',description:'Каждый ранг снижает входящий урон медика на 6%.'},
+  medicShot:{role:'medic',price:157,max:4,name:'Тактический пистолет',description:'Каждый ранг даёт +0,3 урона пистолету.'},
+  rate:{role:'rifle',price:30,max:4,name:'Темп огня',description:'Каждый ранг даёт +12% к базовому темпу огня.'},
+  slow:{role:'rifle',price:25,max:4,name:'Тормозящие патроны',requires:'rate',description:'Выстрелы замедляют врагов на 36%. Каждый ранг продлевает эффект.'},
+  vitality:{role:'rifle',price:32,max:7,name:'Защита скафандра',description:'Каждый ранг даёт +1 здоровья.'},
+  power:{role:'rifle',price:34,max:7,name:'Усиленные заряды',description:'Каждый ранг даёт +0,2 урона карабину.'},
+  taunt:{role:'tank',price:55,max:1,name:'Провокация',description:'Задетые ударом по области мутанты переключаются на танка на 2,75 секунды.'},
+  guard:{role:'tank',price:70,max:6,name:'Усиленная броня',description:'Каждый ранг даёт +2 здоровья, улучшает броню и ремонт между волнами.'},
+  impact:{role:'tank',price:64,max:6,name:'Ударная волна',requires:'guard',description:'Каждый ранг добавляет 12% к урону удара по области.'},
+  bladeForce:{role:'blade',price:83,max:7,name:'Острый клинок',description:'Каждый ранг даёт +0,4 урона в ближнем бою.'},
+  bladeVeil:{role:'blade',price:92,max:3,name:'Долгая тень',description:'Каждый ранг продлевает невидимость на 0,45 секунды.'},
+  bladeArmor:{role:'blade',price:106,max:6,name:'Гибкая броня',requires:'bladeForce',description:'Каждый ранг поглощает 7% входящего урона.'},
+  psiForce:{role:'psi',price:108,max:7,name:'Сильный разряд',description:'Каждый ранг даёт +0,4 урона цепной молнии.'},
+  psiChain:{role:'psi',price:126,max:3,name:'Ещё один скачок',description:'Каждый ранг позволяет молнии задеть на одну цель больше.'},
+  psiCycle:{role:'psi',price:141,max:3,name:'Быстрый заряд',requires:'psiForce',description:'Каждый ранг сокращает перезарядку молнии на 0,4 секунды.'},
+  medicForce:{role:'medic',price:134,max:7,name:'Сильная доза',description:'Каждый ранг восстанавливает ещё 0,4 здоровья.'},
+  medicReach:{role:'medic',price:158,max:3,name:'Дальняя помощь',description:'Каждый ранг увеличивает дальность лечения.'},
+  medicCycle:{role:'medic',price:175,max:3,name:'Частые инъекции',requires:'medicForce',description:'Каждый ранг сокращает перезарядку лечения на 0,45 секунды.'},
+  rifleReserve:{role:'rifle',price:44,max:3,name:'Запас кислорода',requires:'vitality',description:'+1 здоровья за ранг.'},
+  rifleFeed:{role:'rifle',price:42,max:3,name:'Двойная подача',requires:'rate',description:'+6% к базовому темпу огня за ранг.'},
+  riflePierce:{role:'rifle',price:64,max:3,name:'Надрез брони',requires:'bossRounds',description:'Карабин сохраняет ещё 7% урона по броне за ранг.'},
+  riflePunch:{role:'rifle',price:112,max:1,name:'Тяжёлый затвор',requires:'riflePierce',description:'+1 урона за выстрел.'},
+  rifleVent:{role:'rifle',price:63,max:3,name:'Сброс жара',requires:'boostCycle',description:'Скоростной огонь готов на 0,4 с раньше за ранг.'},
+  tankReserve:{role:'tank',price:64,max:3,name:'Резерв корпуса',requires:'guard',description:'+1 здоровья за ранг.'},
+  tankLaminate:{role:'tank',price:79,max:3,name:'Слоёная броня',requires:'acidPlate',description:'Броня поглощает ещё 2,5% исходного урона за ранг. Кислота на «Последнем рубеже» пробивает этот слой.'},
+  tankFront:{role:'tank',price:81,max:3,name:'Передний контур',requires:'tankRadius',description:'Ударная волна достаёт немного дальше за ранг.'},
+  tankPiston:{role:'tank',price:77,max:3,name:'Ударный поршень',requires:'impact',description:'+0,3 урона обычной атаке за ранг.'},
+  tankRhythm:{role:'tank',price:91,max:3,name:'Рабочий цикл',requires:'tankPiston',description:'+8% к базовому темпу обычной атаки за ранг.'},
+  tankSignal:{role:'tank',price:82,max:3,name:'Громкая приманка',requires:'taunt',description:'Провокация держится на 0,35 с дольше за ранг.'},
+  tankReset:{role:'tank',price:89,max:3,name:'Возврат поршня',requires:'tankCycle',description:'Ударная волна готова на 0,22 с раньше за ранг.'},
+  bladeReserve:{role:'blade',price:88,max:3,name:'Вторая подкладка',requires:'bladeHealth',description:'+1 здоровья за ранг.'},
+  bladeEdge:{role:'blade',price:82,max:3,name:'Тонкая кромка',requires:'bladeForce',description:'+0,3 урона за удар за ранг.'},
+  bladeLunge:{role:'blade',price:85,max:3,name:'Шаг в тени',requires:'bladeVeil',description:'Боец быстрее движется в невидимости за каждый ранг.'},
+  bladeFade:{role:'blade',price:107,max:3,name:'Быстрый уход',requires:'bladeLunge',description:'Невидимость готова на 0,45 с раньше за ранг.'},
+  bladeFinish:{role:'blade',price:113,max:3,name:'Скрытое острие',requires:'bladeAmbush',description:'+8% базового урона к удару из невидимости за ранг.'},
+  bladeRhythm:{role:'blade',price:100,max:3,name:'Второй выпад',requires:'bladeTempo',description:'+6% к базовому темпу атак за ранг.'},
+  psiReserve:{role:'psi',price:103,max:3,name:'Закрытый контур',requires:'psiHealth',description:'+1 здоровья за ранг.'},
+  psiFocus:{role:'psi',price:108,max:3,name:'Фокус разряда',requires:'psiForce',description:'+0,3 урона цепной молнии за ранг.'},
+  psiReach:{role:'psi',price:129,max:3,name:'Дальний проводник',requires:'psiRelay',description:'Молния перескакивает на более далёкого врага за каждый ранг.'},
+  psiReset:{role:'psi',price:134,max:3,name:'Размыкатель',requires:'psiCycle',description:'Цепная молния готова на 0,22 с раньше за ранг.'},
+  psiNetwork:{role:'psi',price:181,max:1,name:'Живая цепь',requires:'psiReach',description:'Цепная молния задевает ещё одного врага.'},
+  psiPulse:{role:'psi',price:125,max:3,name:'Усиленный импульс',requires:'psiShot',description:'+0,3 урона обычному выстрелу за ранг.'},
+  medicReserve:{role:'medic',price:125,max:3,name:'Запас прочности',requires:'medicHealth',description:'+1 здоровья за ранг.'},
+  medicKit:{role:'medic',price:165,max:2,name:'Полная ампула',requires:'medicForce',description:'+1 здоровья за лечение за ранг.'},
+  medicRange:{role:'medic',price:147,max:3,name:'Удлинитель дозатора',requires:'medicReach',description:'Дальность лечения растёт с каждым рангом.'},
+  medicReset:{role:'medic',price:153,max:3,name:'Второй картридж',requires:'medicCycle',description:'Лечение готово на 0,24 с раньше за ранг.'},
+  medicShield:{role:'medic',price:172,max:3,name:'Защитная плёнка',requires:'medicKit',description:'Лечение снижает входящий урон на 25% на короткое время. Ранги продлевают защиту.'},
+  medicSidearm:{role:'medic',price:140,max:3,name:'Точная кобура',requires:'medicShot',description:'+0,3 урона пистолету за ранг.'},
 };
-const rankPrices=[1,2,3,5,8,12,17];
+const rankPrices=[1,1.5,2,2.7,3.6,4.8,6];
 function cost(key){
   const index=rank(key);
-  return index>=upgrades[key].max?0:upgrades[key].price*rankPrices[index];
+  return index>=upgrades[key].max?0:Math.ceil(upgrades[key].price*rankPrices[index]);
 }
 function upgradeGate(key){
   const n=upgrades[key];
@@ -3684,7 +3766,7 @@ function canRecruit(role){
 }
 function treeArtwork(key){
   const node=upgrades[key];
-  const source=node?skillArt[node.icon]:unitTextures[key];
+  const source=node?skillArt[key]:unitTextures[key];
   return '<img class="'+(node?'tree-skill-art':'tree-portrait')+'" src="'+source+'" alt="" width="52" height="52" decoding="async">';
 }
 function treeNode(key,name,status,stateClass,hero=false){
@@ -3700,13 +3782,16 @@ function branchMarkup([role,hero]){
   const ready=canRecruit(role)&&state.mutagen>=hero.price;
   const root=treeNode(role,hero.name,owned?(role==='rifle'?'Стартовый герой':activeHero(role)?'В отряде':'В ангаре'):
     canRecruit(role)?hero.price+' мутагена':'Закрыт',owned?'purchased':ready?'ready':'inaccessible',true);
-  const skills=hero.nodes.map(key=>{
+  const renderSkill=key=>{
     const n=upgrades[key],level=rank(key),gate=upgradeGate(key);
     const status=level>=n.max?'Максимум':gate?'Закрыто':level+'/'+n.max+' · '+cost(key);
-    return treeNode(key,n.name,status,level?'purchased':!gate&&state.mutagen>=cost(key)?'ready':'inaccessible');
-  }).join('');
+    const children=hero.nodes.filter(child=>upgrades[child].requires===key).map(renderSkill).join('');
+    return '<li>'+treeNode(key,n.name,status,level?'purchased':!gate&&state.mutagen>=cost(key)?'ready':'inaccessible')+
+      (children?'<ul>'+children+'</ul>':'')+'</li>';
+  };
+  const skills=hero.nodes.filter(key=>!upgrades[key].requires).map(renderSkill).join('');
   return '<section class="tree-branch '+(owned?'':'closed')+active+'" style="--branch:'+hero.color+'">'+root+
-    '<div class="tree-children">'+skills+'</div></section>';
+    '<ul class="tree-children">'+skills+'</ul></section>';
 }
 function nodeDetail(){
   const hero=heroData[selectedNode];
@@ -3726,7 +3811,17 @@ function nodeDetail(){
   const gate=upgradeGate(key);
   const max=rank(key)>=node.max;
   const text=max?'Максимальный ранг':gate||'Улучшить · '+cost(key)+' мутагена';
-  return '<strong>'+node.name+' · '+rank(key)+'/'+node.max+'</strong><p>'+node.description+'</p><button data-upgrade="'+key+
+  const healthNodes=['vitality','guard','bladeHealth','psiHealth','medicHealth','rifleReserve','tankReserve','bladeReserve','psiReserve','medicReserve'];
+  const health=heroMaxHealth(node.role);
+  const attack=['power','riflePunch','tankPiston','bladeForce','bladeEdge','psiShot','psiPulse','medicShot','medicSidearm'].includes(key);
+  const oldValue=heroAttacks[node.role].damage();
+  const increment={power:2,riflePunch:10,tankPiston:3,bladeForce:4,bladeEdge:3,psiShot:3,psiPulse:3,medicShot:3,medicSidearm:3};
+  const bonus=node.role==='blade'&&gearEquipped(2)?1.25:1;
+  const preview=max?'':healthNodes.includes(key)?
+    '<small>Здоровье '+combatPoints(health)+' → '+combatPoints(health+(key==='guard'?20:10))+'</small>':attack?
+    '<small>Урон '+combatPoints(Math.round(oldValue))+' → '+combatPoints(Math.round(oldValue+increment[key]*bonus))+'</small>':
+    ['psiChain','psiNetwork'].includes(key)?'<small>Целей '+psionChainLimit()+' → '+(psionChainLimit()+1)+'</small>':'';
+  return '<strong>'+node.name+' · '+rank(key)+'/'+node.max+'</strong><p>'+node.description+'</p>'+preview+'<button data-upgrade="'+key+
     '" class="primary" '+(max||gate||state.mutagen<cost(key)?'disabled':'')+'>'+text+'</button>';
 }
 function showTree(){
@@ -3739,8 +3834,8 @@ function showTree(){
   const tabs=Object.entries(heroData).map(([role,hero])=>'<button type="button" class="tree-tab" data-node="'+role+
     '" aria-pressed="'+(role===selected)+'">'+treeArtwork(role)+'<span>'+hero.name+'</span></button>').join('');
   show('Дерево экипажа','<nav class="tree-tabs" aria-label="Ветки героев">'+tabs+'</nav>'+
-    '<div class="tree-scroll"><div class="tree-graph"><div class="tree-root">Терминал шаттла</div><div class="tree-grid">'+
-    Object.entries(heroData).map(branchMarkup).join('')+'</div></div></div><div class="tree-detail">'+
+    '<div class="tree-scroll"><div class="tree-graph tree-graph-selected">'+
+    branchMarkup([selected,heroData[selected]])+'</div></div><div class="tree-detail">'+
     treeArtwork(selectedNode)+'<div class="tree-node-copy">'+nodeDetail()+'</div></div>');
   const graph=body.querySelector('.tree-scroll');
   if(graph){
@@ -3860,13 +3955,12 @@ function renderHangarCrew(){
       '<img src="'+unitTextures[role]+'" alt="" width="66" height="61"><span class="hangar-hero-name" aria-hidden="true">'+hero.name+'</span></button>';
   }).join('');
 }
-const statNumber=new Intl.NumberFormat('ru',{maximumFractionDigits:2});
 const heroSkillNotes={
   rifle:()=>'+83% к скорострельности на 5 с',
   tank:()=>'Радиус удара '+tankStrikeRadius(),
   blade:()=>'Невидимость '+statNumber.format(bladeCloakDuration())+' с',
   psi:()=>'До '+psionChainLimit()+' целей за разряд',
-  medic:()=>'Восстанавливает '+medicHealAmount()+' ХП за применение',
+  medic:()=>'Восстанавливает '+combatPoints(medicHealAmount())+' ХП за применение',
 };
 function showHeroProfile(role){
   const hero=heroData[role];
@@ -3875,8 +3969,8 @@ function showHeroProfile(role){
   const index=missionData.findIndex(mission=>mission.owner===role);
   const equipment=gearEquipped(index)?missionData[index].reward:role==='rifle'?'Стандартный карабин':'Стандартная экипировка';
   const stats=[
-    ['Макс. здоровье',heroMaxHealth(role)],
-    ['Урон за атаку',Math.round(attack.damage())],
+    ['Макс. здоровье',combatPoints(heroMaxHealth(role))],
+    ['Урон за атаку',combatPoints(Math.round(attack.damage()))],
     ['Интервал атак',statNumber.format(attack.interval())+' с'],
   ];
   panel='crew';
@@ -4339,7 +4433,7 @@ document.addEventListener('click',event=>{
       showLocker(index);
     }
   }
-  if(button.dataset.replay) start(Number(button.dataset.replay),Number(button.dataset.replayMission));
+  if(button.dataset.replay) start(Number(button.dataset.replay),Number(button.dataset.replayMission),Number(button.dataset.replaySpeed));
   if(button.dataset.mission!==undefined) selectMission(Number(button.dataset.mission));
   if(button.hasAttribute('data-launch')) start(selectedDifficulty,selectedMission);
   if(button.id==='close'||button.hasAttribute('data-close')) get('dialog').close();
