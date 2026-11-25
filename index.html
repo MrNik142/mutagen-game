@@ -456,6 +456,29 @@ dialog.report-open{width:min(94vw,690px)}
   .report-content{padding:8px 12px;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
   .report-actions{padding:6px 12px}
 }
+.scene-slot-art{position:absolute;inset:0;margin:auto;width:100%;height:100%;
+  object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.scene-actions .scene-slot{min-width:0}
+.slot-display{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(8px,3vw,20px);
+  padding:8px 12px;border:1px solid #3a5360;border-radius:8px;background:radial-gradient(ellipse at 12% 65%,#294546,#101a29 57%)}
+.slot-portrait{width:clamp(54px,15vw,87px);height:auto;image-rendering:pixelated}
+.slot-reels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot-reels span{display:grid;place-items:center;min-height:58px;border:1px solid #527662;
+  border-radius:7px;background:#112322;color:#a6ffce;font-size:2rem;box-shadow:inset 0 0 14px #233e36}
+.slot-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.slot-message{font-weight:700}
+.slot-odds ul{list-style:none;padding:0;display:grid;gap:6px}
+.slot-odds li{display:grid;grid-template-columns:1.5rem 1fr auto;gap:6px}
+.slot-odds li>span{color:#9be9bb;text-align:center}
+@media(prefers-reduced-motion:no-preference){
+  .slot-reels span{animation:slot-reveal .28s ease-out both}
+  .slot-reels span:nth-child(2){animation-delay:.045s}
+  .slot-reels span:nth-child(3){animation-delay:.09s}
+}
+@keyframes slot-reveal{
+  from{clip-path:inset(43% 0 43%);opacity:.3;transform:translateY(-4px)}
+  to{clip-path:inset(0);opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
@@ -472,6 +495,7 @@ dialog.report-open{width:min(94vw,690px)}
 <canvas id="hangar-art" width="1728" height="756" aria-label="Ангар шаттла"></canvas>
 <div class="scene-actions" role="group" aria-label="Оборудование ангара">
   <button type="button" data-panel="tech" aria-label="Терминал прокачки" style="--x:14.5%;--y:17%;--w:17%;--h:36%;--glow:#70dfe6"><span class="scene-caption" aria-hidden="true">Терминал прокачки</span><span class="scene-touch-caption" aria-hidden="true">Дерево</span></button>
+  <button type="button" class="scene-slot" data-panel="slot" aria-label="Чужой арсенал, игровой автомат" aria-haspopup="dialog" aria-controls="dialog" style="--x:32%;--y:24%;--w:9.5%;--h:26%;--glow:#96f4c2"><canvas class="scene-slot-art" id="hangar-slot-art" width="48" height="64" aria-hidden="true"></canvas><span class="scene-caption" aria-hidden="true">Чужой арсенал</span><span class="scene-touch-caption" aria-hidden="true">Автомат</span></button>
   <button type="button" data-panel="gear" aria-label="Оружейный шкаф" style="--x:42%;--y:16%;--w:16%;--h:34%;--glow:#ffc07e"><span class="scene-caption" aria-hidden="true">Оружейный шкаф</span><span class="scene-touch-caption" aria-hidden="true">Оружие</span></button>
   <button type="button" data-panel="map" aria-label="Портал" style="--x:70%;--y:10%;--w:17%;--h:43%;--glow:#c6a0ff"><span class="scene-caption" aria-hidden="true">Портал</span><span class="scene-touch-caption" aria-hidden="true">Портал</span></button>
 </div>
@@ -500,7 +524,7 @@ dialog.report-open{width:min(94vw,690px)}
   <div class="dialog-body">
     <div class="route-choices">
       <button type="button" class="route-choice" data-route="safe">
-        Безопасный маршрут<span>Обычный бой в следующем секторе</span>
+        Безопасный маршрут<span>Удержать площадку до открытия шлюза</span>
       </button>
       <button type="button" class="route-choice" data-route="risk">
         Рискованный отсек<span id="route-risk"></span>
@@ -573,8 +597,8 @@ const waves = [
 const campaignYield=[1,.74,.48,.38,.29];
 const missionData=[
   {name:'Ретранслятор',rooms:3,boss:'Громила',tint:'#7ac5d0',brief:'Стаи атакуют с двух сторон. Громила таранит через отсек и открывается после столкновения.',reward:'Карабин «Шип»',owner:'rifle',effect:'2,4 базового урона, пробивает броню.',strength:1},
-  {name:'Насосная',rooms:4,boss:'Смотритель',tint:'#e6a472',brief:'Криоплювы замедляют отряд. Смотритель пускает струи хладагента через весь отсек.',reward:'Панцирь Смотрителя',owner:'tank',effect:'Танк получает +3 к максимальному здоровью.',strength:1.53},
-  {name:'Карантинный комплекс',rooms:5,boss:'Кокон',tint:'#bf9ae7',brief:'Споровики замедляют атаки. Кокон защищён, пока живы его наросты.',reward:'Клинок «Коготь»',owner:'blade',effect:'Дамагер наносит на 25% больше урона в ближнем бою.',strength:2.05},
+  {name:'Насосная',rooms:4,boss:'Смотритель',tint:'#e6a472',brief:'Хладагент замедляет бойцов и частично пробивает броню танка. Смотритель бьёт по боевому порядку с двух сторон.',reward:'Панцирь Смотрителя',owner:'tank',effect:'Танк получает +3 к максимальному здоровью.',strength:1.86},
+  {name:'Карантинный комплекс',rooms:5,boss:'Кокон',tint:'#bf9ae7',brief:'Споровики замедляют атаки. Кокон защищён, пока живы его наросты.',reward:'Клинок «Коготь»',owner:'blade',effect:'Дамагер наносит на 25% больше урона в ближнем бою.',strength:2.11},
   {name:'Реактор',rooms:6,boss:'Реакторник',tint:'#8cd781',brief:'Дуговики бьют лучом по бойцам на одной линии. Реакторник по очереди перегревает участки пола.',reward:'Резонатор',owner:'psi',effect:'Цепная молния наносит на 25% больше урона.',strength:3.23},
   {name:'Ядро',rooms:7,boss:'Сердце мутации',tint:'#ee8389',brief:'Имитаторы распадаются на двойников. Сердце мутации притягивает ближайших бойцов и выпускает импульс.',reward:'Капсула Ядра',owner:'medic',effect:'Медик лечит на 25% сильнее.',strength:4.18},
 ];
@@ -1171,15 +1195,16 @@ function makeEnemy(kind,x,y,room,difficulty,missionIndex=0) {
   }[kind];
   const profile=difficulties[difficulty-1];
   const mission=missionData[missionIndex];
-  const hpScale=(1+(mission.strength-1)*(kind==='boss'?.76:.52))*(1+room*(missionIndex===0?.20:.08));
+  const hpScale=(1+(mission.strength-1)*(kind==='boss'?.76:.52))*(1+room*(missionIndex===0?.20:missionIndex===1?.12:.08));
   const damageScale=(1+(mission.strength-1)*.29)*(1+room*(missionIndex===0?.08:.045));
-  const bossScale=kind==='boss'&&missionIndex>0?1.25:1;
-  const tierWeight=[1,.86,.70,.43,.34][missionIndex];
+  const bossScale=kind==='boss'?[1.25,2.15,1.73,1.75,1.90][missionIndex]:1;
+  const tierWeight=[1,.92,.84,.72,.68][missionIndex];
   const tierHp=1+(profile.hp-1)*tierWeight;
   const tierDamage=1+(profile.damage-1)*tierWeight;
   const brute=kind==='boss'&&missionIndex===0;
-  const max=Math.round(base.hp*tierHp*hpScale*bossScale*(brute?1.20:1));
-  const damage=Math.round(base.damage*tierDamage*damageScale*(brute?1.02:1));
+  const coreEntry=missionIndex===4&&room<2&&kind!=='boss';
+  const max=Math.round(base.hp*tierHp*hpScale*bossScale*(brute?1.20:1)*(coreEntry?.88:1));
+  const damage=Math.round(base.damage*tierDamage*damageScale*(kind==='boss'?1.26:1)*(coreEntry?.81:1));
   return {kind,x,y,max,hp:max,variant:missionIndex,speed:base.speed+profile.speed+(brute?9:0),damage,
     value:Math.max(1,Math.round(base.reward*profile.reward*(1+missionIndex*.18)*campaignYield[missionIndex]*(kind==='boss'?1:missionIndex===0?.36:.55))),
     cd:.45,slow:0,taunted:0,dir:-1,wind:0,aim:null,exposed:0,hit:0,flankSide:y<152?-1:1};
@@ -1206,6 +1231,9 @@ function start(difficulty,missionIndex=selectedMission,replaySpeed=1) {
     tankBlocked:0,tankStrikes:0,
     h:{x:157,y:159,max:hp,hp,dir:1,cd:0,boost:0,skill:2,flash:0,hit:0,dashReady:0,dashUntil:0},
     tank:activeHero('tank')?makeTank():null,recruits:auxHeroes.filter(activeHero).map(makeRecruit)};
+  run.squadPressure=squadPressure[roster(run).length-1];
+  run.objectivePlan=planDistrictObjectives(run);
+  run.objectiveTotals={done:0,failed:0,reward:0};
   const boundary=1+(run.seed>>>4)%(mission.rooms-1);
   run.routeAt=boundary*3;
   run.fieldAt=(boundary===1?2:boundary-1)*3;
@@ -1239,9 +1267,9 @@ const heroAttacks={
   medic:{damage:()=>15+rank('medicShot')*3+rank('medicSidearm')*3,interval:()=>1.02},
 };
 const tankStrikeRadius=()=>47+rank('tankRadius')*4+rank('tankFront')*2;
-const bladeCloakDuration=()=>2.15+rank('bladeVeil')*.45;
-const psionChainLimit=()=>3+rank('psiChain')+rank('psiNetwork');
-const medicHealAmount=()=>Math.round((30+rank('medicForce')*4+rank('medicKit')*10)*(gearEquipped(4)?1.25:1));
+const bladeCloakDuration=()=>2.15+rank('bladeVeil')*.45+(districtModule(2)?.35:0);
+const psionChainLimit=()=>3+rank('psiChain')+rank('psiNetwork')+Number(districtModule(3));
+const medicHealAmount=()=>Math.round((30+rank('medicForce')*4+rank('medicKit')*10)*(gearEquipped(4)?1.25:1))+(districtModule(4)?10:0);
 const heroCooldowns={
   rifle:()=>13-rank('boostCycle')*1.0-rank('rifleVent')*.4,
   tank:()=>4.1-rank('tankCycle')*.35-rank('tankReset')*.22,
@@ -1296,9 +1324,299 @@ function prepareSectorHazard(r,final){
   const locations=[...mounts.slice(offset),...mounts.slice(0,offset)].slice(0,kind==='steam'?2:1);
   return {kind,locations,index:0,nextAt:Infinity,aim:null,fireAt:0,burstUntil:0,burst:null};
 }
+const objectiveProfiles={
+  relay:{name:'Запустить передатчик',color:'#76e6f4',seconds:15,special:'Глушитель',role:'jammer',enemy:'orb'},
+  pump:{name:'Удержать клапан',color:'#ffba76',seconds:17,special:'Саботажник',role:'saboteur',enemy:'fast'},
+  escort:{name:'Доставить образец',color:'#8ce9bb',seconds:18,special:'Инкубатор',role:'incubator',enemy:'spore'},
+  reactor:{name:'Охладить реактор',color:'#dea5ff',seconds:21,special:'Перегрузчик',role:'overloader',enemy:'spark'},
+  core:{name:'Отключить узлы питания',color:'#ff9db2',seconds:23,special:'Мимик',role:'mimic',enemy:'echo'},
+  cache:{name:'Вскрыть защищённый тайник',color:'#ffdc91',seconds:16},
+  hold:{name:'Удержать точку до открытия шлюза',color:'#a6cfef',seconds:14}
+};
+const districtObjectives=['relay','pump','escort','reactor','core'];
+const pointPacks=[
+  [['fast'],['fast','fast'],['spit']],
+  [['fast','fast'],['armor'],['frost','fast']],
+  [['fast','ward'],['spore','fast'],['charger','fast']],
+  [['armor','fast'],['spark','ward'],['leech','fast']],
+  [['echo','fast'],['armor','leech'],['orb','echo']]
+];
+const pointInterval=[5.2,4.0,3.3];
+const pointRadius=58;
+function onCapturePoint(r,point,actor){
+  return Math.hypot(actor.x-point.x,(actor.y-point.y)/.72)<=pointRadius&&
+    !obstruction(r.layout.obstacles,actor,point);
+}
+function activePointTask(r){
+  const task=r.objective;
+  return task?.status==='active'&&['relay','pump','hold'].includes(task.kind)?task:null;
+}
+function approachPointTask(r,actor,dt){
+  const task=activePointTask(r);
+  if(!task) return false;
+  const atPoint=task.kind==='relay'?distance(actor,task.point)<=23&&
+    !obstruction(r.layout.obstacles,actor,task.point):onCapturePoint(r,task.point,actor);
+  if(atPoint) return false;
+  const point=task.point;
+  actor.dir=point.x>=actor.x?1:-1;
+  stepToward(r,actor,point,actor===r.tank?70:77,dt);
+  return true;
+}
+function sendPointAttackers(r,task){
+  const hasSupport=r.recruits.some(actor=>actor.role==='psi'||actor.role==='medic');
+  const lighterFlank=!r.tank&&!hasSupport&&r.difficulty>1;
+  const extra=Math.max(0,r.squadPressure.pointExtra-Number(lighterFlank));
+  const limit=[4,5,6][r.difficulty-1]+Math.floor(r.missionIndex/2)+extra;
+  if(r.pendingReinforcement||r.time<task.nextPackAt||r.enemies.length>=limit) return;
+  const packs=pointPacks[r.missionIndex];
+  const pack=[...packs[task.pointPacks%packs.length]];
+  if(r.difficulty>1) pack.push(r.difficulty===3&&task.pointPacks%2?'charger':'fast');
+  if(extra) pack.push(extra===2&&r.difficulty===3&&task.pointPacks%2?'armor':'fast');
+  if(extra===2&&r.difficulty===3&&task.pointPacks%3===1) pack.push('fast');
+  queueReinforcement(r,pack.slice(0,limit-r.enemies.length));
+  task.pointPacks++;
+  task.nextPackAt=r.time+Math.max(2.8,pointInterval[r.difficulty-1]-.22*extra);
+}
+const districtModules=[
+  {name:'Запасной магазин',effect:'После первого выстрела в секторе стрелок быстрее делает второй.'},
+  {name:'Ремонтный резерв',effect:'Танк восстанавливает ещё 1 здоровье между секторами.'},
+  {name:'Теневая обмотка',effect:'Невидимость дамагера длится на 0,35 с дольше.'},
+  {name:'Дополнительный контакт',effect:'Цепная молния задевает ещё одну цель.'},
+  {name:'Чистый концентрат',effect:'Медик восстанавливает ещё 1 здоровье за лечение.'}
+];
+function districtModule(index){
+  return state.districtModules?.[index]===true;
+}
+function planDistrictObjectives(r){
+  const signature=districtObjectives[r.missionIndex];
+  let previous=signature;
+  return Array.from({length:r.mission.rooms},(_,room)=>{
+    const roll=((r.seed>>>((room*5)%25))^(r.seed>>>17)^Math.imul(room+1,1597334677))>>>0;
+    const choices=[signature,'cache','hold'].filter(type=>type!==previous);
+    const kind=room===0?signature:choices[roll%choices.length];
+    previous=kind;
+    return {kind,wave:room===r.mission.rooms-1?2:2+((roll>>>6)&1)};
+  });
+}
+function objectivePoints(r){
+  return [[269,150],[232,104],[289,198],[350,114],[353,178],[204,157],[413,147],[279,86],[286,218]]
+    .map(([x,y])=>({x,y})).filter(p=>canSpawnEnemy(r,p)&&waypoint(r.layout,entry,p)&&waypoint(r.layout,p,exit));
+}
+function prepareDistrictObjective(r,final){
+  const planned=r.objectivePlan[r.room];
+  if(final||(!r.routeObjective&&r.wave!==planned.wave)) return null;
+  const signature=districtObjectives[r.missionIndex];
+  let kind=r.routeObjective?(r.riskySector?'cache':'hold'):planned.kind;
+  if(!r.routeObjective&&kind===r.lastObjectiveKind){
+    kind=[signature,'cache','hold'].find(candidate=>candidate!==kind);
+  }
+  const profile=objectiveProfiles[kind];
+  const points=objectivePoints(r);
+  if(!points.length) return null;
+  const offset=Math.floor(runRandom(r)*points.length);
+  const sites=[...points.slice(offset),...points.slice(0,offset)];
+  r.lastObjectiveKind=kind;
+  return {kind,profile,sites,point:sites[0],progress:0,goal:profile.seconds+(r.difficulty-1)*3,
+    status:'waiting',enemies:[],drone:null,pulse:0,specialAt:0};
+}
+function objectiveEnemy(r,kind,point,role){
+  const enemy=spawnEnemy(r,[kind,point.x,point.y]);
+  enemy.value=0;
+  enemy.objectiveRole=role;
+  r.enemies.push(enemy);
+  return enemy;
+}
+function startDistrictObjective(r){
+  const task=r.objective;
+  if(!task) return;
+  task.status='active';
+  task.deadline=r.time+task.goal+29;
+  task.noticeUntil=r.time+2.25*r.speed;
+  task.changeAt=r.time+6;
+  task.specialAt=r.time+4.5;
+  if(activePointTask(r)){
+    r.enemies=r.enemies.slice(0,r.difficulty===3?3:2);
+    r.backups=0;
+    task.pointPacks=0;
+    task.nextPackAt=r.time+2.8;
+  }
+  if(task.kind==='relay'||task.kind==='escort'){
+    const hp=82+r.missionIndex*11;
+    task.drone={...task.point,hp,max:hp,hit:0,status:'moving'};
+    assignDroneHunters(r,1);
+  }
+  if(task.kind==='core'||task.kind==='cache'){
+    const sites=task.sites.slice(0,task.kind==='core'?2:1);
+    task.enemies=sites.map(point=>{
+      const node=objectiveEnemy(r,'armor',point,'node');
+      node.hp=node.max=Math.round(node.max*.58);
+      return node;
+    });
+    if(task.kind==='core'){
+      const point=task.sites[2]||task.sites.at(-1);
+      const defender=objectiveEnemy(r,'charger',point,'sentinel');
+      defender.hp=defender.max=Math.round(defender.max*1.6);
+      task.defender=defender;
+    }
+  }
+  const profile=districtObjectives[r.missionIndex]===task.kind?task.profile:null;
+  if(profile?.enemy&&r.difficulty>1){
+    const places=[{x:489,y:103},{x:510,y:169},{x:464,y:212},...task.sites.slice(1)];
+    const point=places.find(p=>canSpawnEnemy(r,p)&&waypoint(r.layout,entry,p)&&
+      r.enemies.every(e=>distance(e,p)>30));
+    if(point){
+      task.special=objectiveEnemy(r,profile.enemy,point,profile.role);
+      task.special.hp=task.special.max=Math.round(task.special.max*(r.difficulty===3?1.32:1.12));
+    }
+  }
+  notify(task.profile.name,'good',2);
+}
+function endDistrictObjective(r,success){
+  const task=r.objective;
+  if(task.status!=='active') return;
+  task.status=success?'done':'failed';
+  task.noticeUntil=0;
+  if(task.drone) task.drone.status=success?'safe':'lost';
+  if(!success) for(const node of task.enemies) node.hp=0;
+  const totals=r.objectiveTotals;
+  if(success){
+    totals.done++;
+    const reward=(3+r.missionIndex*2)*r.difficulty;
+    totals.reward+=reward;
+    bankMutagen(r,reward);
+  } else totals.failed++;
+  notify(success?'Задача выполнена':'Задача сорвалась',success?'good':'danger',3);
+}
+function objectiveSpecialTurn(r,dt){
+  const task=r.objective;
+  if(task.kind==='core'){
+    const mimics=r.enemies.filter(e=>e.hp>0&&['mimic','mimicFragment'].includes(e.objectiveRole));
+    for(const node of task.enemies.filter(node=>node.hp>0)){
+      if(mimics.some(enemy=>distance(node,enemy)<30)) node.hp=Math.min(node.max,node.hp+dt*4);
+    }
+  }
+  const enemy=task.special;
+  if(!enemy||enemy.hp<=0) return;
+  if(enemy.objectiveRole==='saboteur'&&distance(enemy,task.point)<27&&r.time>=task.specialAt){
+    task.progress=Math.max(0,task.progress-3);
+    task.specialAt=r.time+3.5;
+    task.pulse=r.time+.45;
+  }
+  if(enemy.objectiveRole==='incubator'&&r.time>=task.specialAt){
+    task.specialAt=r.time+4.5;
+    const points=[{x:enemy.x+22,y:enemy.y},{x:enemy.x-22,y:enemy.y}];
+    const point=points.find(p=>canSpawnEnemy(r,p)&&r.enemies.every(other=>distance(other,p)>16));
+    if(point&&r.enemies.length<9) objectiveEnemy(r,'fast',point,'hatchling');
+  }
+  if(enemy.objectiveRole==='overloader'&&r.time>=task.specialAt){
+    task.specialAt=r.time+5;
+    task.changeAt=Math.min(task.changeAt,r.time+.55);
+  }
+}
+function updateDistrictObjective(r,dt){
+  const task=r.objective;
+  if(task?.status!=='active') return;
+  const team=survivors(r);
+  const {kind,drone}=task;
+  objectiveSpecialTurn(r,dt);
+  if(r.time>=task.deadline||drone?.status==='lost'){
+    endDistrictObjective(r,false);
+    return;
+  }
+  if(activePointTask(r)){
+    if(kind==='relay'){
+      const atConsole=team.some(actor=>distance(actor,task.point)<=26&&
+        !obstruction(r.layout.obstacles,actor,task.point));
+      const jammed=task.special?.objectiveRole==='jammer'&&task.special.hp>0;
+      if(atConsole&&!jammed){
+        endDistrictObjective(r,true);
+        return;
+      }
+    } else {
+      const defenders=team.filter(actor=>onCapturePoint(r,task.point,actor)).length;
+      const attackers=r.enemies.filter(enemy=>enemy.hp>0&&onCapturePoint(r,task.point,enemy)).length;
+      task.contested=defenders>0&&attackers>=defenders;
+      if(defenders&&!task.contested) task.progress+=dt;
+      if(task.progress>=task.goal){
+        endDistrictObjective(r,true);
+        return;
+      }
+    }
+    sendPointAttackers(r,task);
+    return;
+  }
+  if(kind==='core'||kind==='cache'){
+    if(task.enemies.every(node=>node.hp<=0)&&(!task.defender||task.defender.hp<=0)) endDistrictObjective(r,true);
+    return;
+  }
+  let point=task.point;
+  if(drone) drone.hit=Math.max(0,drone.hit-dt);
+  if(kind==='escort'){
+    if(team.some(actor=>distance(actor,drone)<118)) stepToward(r,drone,exit,37,dt);
+    point=drone;
+    if(distance(drone,exit)<=3) endDistrictObjective(r,true);
+  }
+  if(kind==='reactor'&&r.time>=task.changeAt){
+    const index=(task.sites.indexOf(task.point)+1)%task.sites.length;
+    task.point=point=task.sites[index];
+    task.changeAt=r.time+(r.difficulty===3?4.5:6);
+    task.pulse=r.time+1.2;
+  }
+  if(kind==='reactor'&&task.pulse>0&&r.time>=task.pulse){
+    task.pulse=0;
+    for(const actor of team) if(distance(actor,point)>71) hurt(r,8+r.difficulty*3,actor,'heat');
+  }
+  if(!r.enemies.length||kind==='reactor'&&task.pulse>0){
+    for(const actor of team) if(actor.hp>0&&distance(actor,point)>38) stepToward(r,actor,point,78,dt);
+  }
+  if(kind==='escort'||task.status!=='active') return;
+  const near=team.some(actor=>actor.hp>0&&distance(actor,point)<84);
+  if(near) task.progress+=dt;
+  if(task.progress>=task.goal) endDistrictObjective(r,true);
+}
+function drawDistrictObjective(r){
+  const task=r.objective;
+  if(task?.status!=='active') return;
+  if(task.kind==='core'||task.kind==='cache') return;
+  const {x,y}=task.drone||task.point;
+  const capture=task.kind==='hold'||task.kind==='pump';
+  const near=capture?pointRadius:task.kind==='reactor'?69:38;
+  ctx.save();
+  ctx.beginPath();
+  ctx.ellipse(x,y,near,near*(capture?.72:.45),0,0,Math.PI*2);
+  ctx.globalAlpha=task.pulse>r.time?.65:.40;
+  ctx.strokeStyle=task.contested?'#ffac8a':task.profile.color;
+  ctx.lineWidth=2;
+  ctx.stroke();
+  ctx.restore();
+  fill(ctx,x-5,y-11,10,8,task.profile.color);
+  fill(ctx,x-3,y-9,6,4,'#273448');
+  if(task.kind!=='escort'&&task.kind!=='relay'){
+    fill(ctx,x-17,y-17,34,4,'#172132');
+    fill(ctx,x-16,y-16,32*clamp(task.progress/task.goal,0,1),2,task.profile.color);
+  }
+}
+function drawObjectiveEnemy(e){
+  const role=e.objectiveRole;
+  if(!role||role==='hatchling') return false;
+  const tint={node:'#ffe6a6',sentinel:'#ffe6a6',jammer:'#92efff',saboteur:'#ffbd79',
+    incubator:'#a6f4af',overloader:'#e8acff',mimic:'#ffadc6',mimicFragment:'#ffadc6'}[role];
+  if(role==='node'){
+    fill(ctx,e.x-10,e.y-21,20,20,'#38445a');
+    fill(ctx,e.x-8,e.y-20,16,15,'#1d2838');
+    fill(ctx,e.x-5,e.y-17,10,10,tint);
+    fill(ctx,e.x-9,e.y-25,18,2,'#443544');
+    fill(ctx,e.x-9,e.y-25,18*clamp(e.hp/e.max,0,1),2,tint);
+    return true;
+  }
+  fill(ctx,e.x-3,e.y-34,6,4,tint);
+  fill(ctx,e.x-1,e.y-36,2,8,tint);
+  return false;
+}
+
 const droneHunters=new Set(['fast','armor','ward','leech']);
 function activeDrone(r){
-  const drone=r.sectorFeature?.drone;
+  const drone=r.objective?.drone||r.sectorFeature?.drone;
   return drone?.status==='moving'?drone:null;
 }
 function prepareSectorFeature(r,final){
@@ -1326,6 +1644,7 @@ function prepareSectorFeature(r,final){
 function prepareSector(r) {
   r.wave++;
   r.piercerUsed=false;
+  r.reserveShot=districtModule(0);
   const final=r.room===r.mission.rooms-1&&r.wave===3;
   r.encounter=missionEncounter(r);
   if(!final&&r.cleared>0){
@@ -1365,9 +1684,15 @@ function prepareSector(r) {
       enemies[enemies.length-1]=[last[0],point.x,point.y];
     }
   }
-  r.sectorEvent=prepareSectorHazard(r,final);
-  r.sectorFeature=prepareSectorFeature(r,final);
-  r.backups=backupCount(r);
+  r.objective=prepareDistrictObjective(r,final);
+  r.sectorEvent=r.objective?null:prepareSectorHazard(r,final);
+  r.sectorFeature=r.objective?null:prepareSectorFeature(r,final);
+  const backups=backupCount(r);
+  const intro=r.missionIndex===2&&r.room===0;
+  const coreEntry=r.missionIndex===4&&r.room<2;
+  const canAddPacks=!final&&!intro&&!coreEntry&&r.wave===2&&!r.objective;
+  r.squadExtraBackups=canAddPacks?r.squadPressure.extraPacks:0;
+  r.backups=backups+r.squadExtraBackups;
   r.overlapAt=0;
   r.packNumber=0;
   r.pendingReinforcement=null;
@@ -1389,8 +1714,18 @@ function prepareSector(r) {
 function canSpawnEnemy(r,point){
   return !r.layout.obstacles.some(o=>inside(point,o,12));
 }
+const squadPressure=[
+  {health:1,damage:1,boss:1,pointExtra:0,extraPacks:0},
+  {health:1.10,damage:1.04,boss:1.23,pointExtra:1,extraPacks:0},
+  {health:1.20,damage:1.08,boss:1.43,pointExtra:1,extraPacks:1},
+  {health:1.27,damage:1.10,boss:1.64,pointExtra:2,extraPacks:1},
+  {health:1.35,damage:1.13,boss:1.87,pointExtra:2,extraPacks:2}
+];
 function spawnEnemy(r,[kind,x,y]){
   const enemy=makeEnemy(kind,x,y,r.room,r.difficulty,r.missionIndex);
+  const pressure=r.squadPressure;
+  enemy.hp=enemy.max=Math.round(enemy.max*(kind==='boss'?pressure.boss:pressure.health));
+  enemy.damage=Math.round(enemy.damage*pressure.damage);
   if(r.riskySector){
     enemy.hp=enemy.max=Math.round(enemy.max*1.12);
     enemy.damage=Math.round(enemy.damage*1.10);
@@ -1405,6 +1740,13 @@ function spawnWave(r) {
   else {
     r.enemies=r.encounter.enemies.map(data=>spawnEnemy(r,data));
     r.overlapAt=r.time+(r.missionIndex===0?4.5:3.2);
+    startDistrictObjective(r);
+    if(r.objective&&r.capsules.length){
+      r.capsules.forEach((capsule,i)=>{capsule.opensAt=r.time+1.25+i*1.7;});
+      r.capOpened=0;
+      return;
+    }
+    if(r.objective) return;
     if(r.sectorFeature?.kind==='evac'){
       const drone=r.sectorFeature.drone;
       drone.status='moving';
@@ -1445,7 +1787,8 @@ function droneThreat(r,actor){
     distance(enemy,drone)<122&&distance(enemy,actor)<190),actor);
 }
 function updateEvacuation(r,dt){
-  const drone=activeDrone(r);
+  const drone=r.sectorFeature?.drone;
+  if(drone?.status!=='moving') return;
   if(!drone) return;
   drone.hit=Math.max(0,drone.hit-dt);
   stepToward(r,drone,exit,49,dt);
@@ -1497,10 +1840,10 @@ function backupCount(r){
   if(missionIndex===3) return room<2?1:room>=4&&difficulty>1?3:2;
   return room<2?1:room>=4&&(wave>1||difficulty>1)?3:2;
 }
-function queueReinforcement(r){
+function queueReinforcement(r,pointWave){
   const pack=r.packNumber;
   const options=reinforcementGroups[r.missionIndex];
-  const kinds=options[(r.room*3+r.wave+pack*3+r.missionIndex)%options.length].split(' ');
+  const kinds=pointWave??options[(r.room*3+r.wave+pack*3+r.missionIndex)%options.length].split(' ');
   const right=[[466,84],[504,150],[490,218]], left=[[68,106],[79,188],[47,220]];
   const slots=(pack+r.wave)%2?[...left,...right]:[...right,...left];
   const team=survivors(r);
@@ -1512,15 +1855,21 @@ function queueReinforcement(r){
     return [kind==='spit'?regionalMutant[r.missionIndex]:kind,x,y];
   });
   const visibleFor=.85*r.speed;
-  r.pendingReinforcement={arrivals,visibleFor,arrivesAt:r.time+visibleFor};
+  r.pendingReinforcement={arrivals,visibleFor,arrivesAt:r.time+visibleFor,pointRaid:Boolean(pointWave)};
   notify('Сигнал движения у шлюза','danger',1);
 }
 function spawnReinforcement(r){
-  const {arrivals}=r.pendingReinforcement;
-  r.enemies.push(...arrivals.map(data=>spawnEnemy(r,data)));
+  const {arrivals,pointRaid}=r.pendingReinforcement;
+  for(const data of arrivals){
+    const enemy=spawnEnemy(r,data);
+    if(pointRaid) enemy.pointRaider=true;
+    if(pointRaid||r.backups<=r.squadExtraBackups)
+      enemy.value=Math.max(1,Math.floor(enemy.value*.6));
+    r.enemies.push(enemy);
+  }
   r.pendingReinforcement=null;
   r.packNumber++;
-  r.backups--;
+  if(!pointRaid) r.backups--;
   r.overlapAt=r.time+3.6;
   assignDroneHunters(r,1);
   notify('Подкрепление · '+sectorLabel(r),'danger',1);
@@ -1569,7 +1918,7 @@ function updateSectorHazard(r){
 function nextFight(r){
   if(r.capsules.some(capsule=>capsule.releasedAt===null)) return;
   if(!r.backups&&!r.bossWaiting){
-    if(!activeDrone(r)) advance(r);
+    if(!activeDrone(r)&&r.objective?.status!=='active') advance(r);
     return;
   }
   if(r.backups){
@@ -1655,11 +2004,12 @@ function evade(r, actor, threats, dt) {
 }
 function guardedBoss(r, target) {
   if(target.kind!=='boss') return false;
-  if(target.variant===2) return r.enemies.some(e=>e.broodPod&&e.hp>0);
+  if(target.variant===2) return r.enemies.some(e=>(e.broodPod||e.phaseGuard)&&e.hp>0);
+  if(target.variant===1&&r.enemies.some(e=>e.phaseGuard&&e.hp>0)) return true;
   return r.difficulty===3&&r.enemies.some(e=>e!==target&&e.hp>0);
 }
 function broodTarget(r,actor){
-  return nearest(r.enemies.filter(e=>e.broodPod&&e.hp>0),actor);
+  return nearest(r.enemies.filter(e=>(e.broodPod||e.phaseGuard)&&e.hp>0),actor);
 }
 function attackClock(r,actor,dt){
   return dt*(actor.sporesUntil>r.time?.67:1);
@@ -1671,10 +2021,14 @@ function applyEnemyDamage(r,target,amount) {
   r.lastEnemyHit=r.time;
   const warded=shieldedByWard(r,target);
   const brute=target.kind==='boss'&&target.variant===0;
-  const armor=guardedBoss(r,target)?(target.variant===2?.30:.55):warded?.84:1;
+  const armor=guardedBoss(r,target)?(target.variant===2?.30:.55):
+    target.kind==='boss'&&target.variant!==2&&target.exposed<=0?(target.variant===1?.55:.72):warded?.84:1;
   const chargeArmor=brute&&(target.bruteRagePending||target.bruteCharge?.combo)?.52:1;
   const exposure=brute&&target.exposed>0&&chargeArmor===1?1.55:1;
-  target.hp-=Math.max(1,Math.round(amount*armor*chargeArmor*exposure));
+  const nodeGuard=target.objectiveRole==='sentinel'&&r.objective?.enemies.some(node=>node.hp>0)?.20:1;
+  const damage=Math.max(1,Math.round(amount*armor*chargeArmor*exposure*nodeGuard));
+  const phaseFloor=target.kind==='boss'&&!brute&&!target.phaseTwo?Math.ceil(target.max/2):0;
+  target.hp=phaseFloor?Math.max(phaseFloor,target.hp-damage):target.hp-damage;
   if(brute&&!target.bruteEnraged&&target.hp<=target.max*.5){
     target.hp=Math.ceil(target.max*.5);
     target.bruteEnraged=true;
@@ -1697,6 +2051,7 @@ function updateTank(r,dt) {
     evade(r,tank,threats,dt);
     return;
   }
+  if(approachPointTask(r,tank,dt)) return;
   const nearby=r.enemies.filter(e=>e.hp>0&&!obstruction(r.layout.obstacles,tank,e));
   const mark=r.h.hp>0?r.h:nearest(r.recruits.filter(actor=>actor.hp>0&&actor.role!=='blade'),tank);
   const danger=mark&&nearest(nearby.filter(e=>distance(e,mark)<42&&distance(e,tank)<132),mark);
@@ -1744,7 +2099,8 @@ function attack(r,target) {
   playEffect('rifle',h.x);
   h.flash=.15;
   r.shots.push({x:h.x+13*h.dir,y:h.y-14,tx:target.x,ty:target.y-(target.kind==='boss'?32:10),life:.13,color:piercing?'#a4effa':undefined});
-  h.cd=heroAttacks.rifle.interval()/(r.rateBuff*(h.boost>0?1.83:1));
+  h.cd=heroAttacks.rifle.interval()/(r.rateBuff*(h.boost>0?1.83:1))*(r.reserveShot?.55:1);
+  r.reserveShot=false;
 }
 function combatPosition(r,actor,target,range,lane){
   if(actor.positionTarget!==target){
@@ -1757,6 +2113,7 @@ function combatPosition(r,actor,target,range,lane){
     !r.layout.obstacles.some(o=>inside(point,o,bodyPadding))?point:null;
 }
 function keepFiringPosition(r,actor,target,d,desired,covered,speed,dt){
+  if(activePointTask(r)) return;
   if(d<desired-13&&!covered){
     const direction=safeDirection(r,actor,p=>Math.min(...r.enemies.map(e=>distance(e,p))),34);
     move(actor,direction.dx,direction.dy,speed,dt,r.layout.obstacles);
@@ -1780,9 +2137,6 @@ function updateHero(r,dt) {
   h.skill-=dt;
   const visible=r.enemies.filter(e=>!obstruction(r.layout.obstacles,h,e));
   const target=droneThreat(r,h)||broodTarget(r,h)||r.focus||nearest(visible.filter(e=>distance(h,e)<158),h)||nearest(r.enemies,h);
-  if(!target) return;
-  const d=distance(target,h);
-  h.dir=target.x>=h.x?1:-1;
   h.moving=false;
   h.vx=0;h.vy=0;
   const threats=avoidableThreats(r,h);
@@ -1791,6 +2145,10 @@ function updateHero(r,dt) {
     evade(r,h,threats,dt);
     return;
   }
+  const advancing=approachPointTask(r,h,dt);
+  if(!target) return;
+  const d=distance(target,h);
+  h.dir=target.x>=h.x?1:-1;
   if(h.skill<=0&&d<151&&(r.enemies.length>1||target.kind==='armor'||target.kind==='boss')) {
     h.boost=5;
     h.skill=heroCooldowns.rifle();
@@ -1799,7 +2157,7 @@ function updateHero(r,dt) {
   }
   const desired=target.kind==='boss'?99:88;
   const covered=!visible.includes(target);
-  if(h.flash<=0) keepFiringPosition(r,h,target,d,desired,covered,pace.hero,dt);
+  if(!advancing&&h.flash<=0) keepFiringPosition(r,h,target,d,desired,covered,pace.hero,dt);
   if(d<158&&h.cd<=0) attack(r,target);
 }
 function rank(key){return state[key]||0}
@@ -1888,9 +2246,12 @@ function updateRecruit(r,actor,dt){
   const nearby=enemies.filter(e=>!obstruction(r.layout.obstacles,actor,e)&&distance(actor,e)<148);
   const threats=avoidableThreats(r,actor);
   if(threats.length){evade(r,actor,threats,dt);return;}
+  if(approachPointTask(r,actor,dt)) return;
   if(actor.role==='blade'){
     const back=enemies.filter(e=>['spit','frost','spore','spark','orb','ward'].includes(e.kind)&&distance(actor,e)<245);
-    const target=droneThreat(r,actor)||broodTarget(r,actor)||r.focus||nearest(back,actor)||nearest(enemies,actor);
+    const task=activePointTask(r);
+    const pointThreat=task&&nearest(enemies.filter(enemy=>distance(enemy,task.point)<86),actor);
+    const target=pointThreat||droneThreat(r,actor)||broodTarget(r,actor)||r.focus||nearest(back,actor)||nearest(enemies,actor);
     if(target) actor.dir=target.x>=actor.x?1:-1;
     bladeTurn(r,actor,target,dt);
     return;
@@ -1929,7 +2290,7 @@ function hurt(r, damage, actor=r.h, source) {
     actor.hit=.28;
     if(!actor.hp){
       actor.status='lost';
-      r.evacResult='lost';
+      if(actor!==r.objective?.drone) r.evacResult='lost';
       notify('Мутанты вывели дрон из строя','danger',3);
       playEffect('mutantBurst',actor.x);
     }
@@ -1940,7 +2301,8 @@ function hurt(r, damage, actor=r.h, source) {
   if(acid&&r.fieldMod==='seals') damage=Math.max(1,Math.round(damage*.70));
   if(actor===r.tank) {
     const armor=r.difficulty===3&&acid?.83:.65-Math.min(3,state.guard)*.06-Math.max(0,state.guard-3)*.02-rank('tankLaminate')*.025;
-    const reduced=Math.max(1,Math.round(damage*armor*(acid?1-rank('acidPlate')*.10:1)));
+    const frostArmor=r.missionIndex===1&&source==='frost'?Math.max(.69,armor):armor;
+    const reduced=Math.max(1,Math.round(damage*frostArmor*(acid?1-rank('acidPlate')*.10:1)));
     r.tankBlocked+=damage-reduced;
     damage=reduced;
   } else if(actor.role==='blade') {
@@ -1948,6 +2310,9 @@ function hurt(r, damage, actor=r.h, source) {
   } else if(actor.role==='medic') {
     damage=Math.max(1,Math.round(damage*(1-rank('medicArmor')*.06)));
   }
+  const task=activePointTask(r);
+  if(task&&task.kind!=='relay'&&!r.tank&&r.squadPressure.pointExtra&&onCapturePoint(r,task.point,actor))
+    damage=Math.max(1,Math.round(damage*.81));
   const loss=Math.min(actor.hp,damage);
   actor.hp-=loss;
   if(source==='frost') actor.frostUntil=Math.max(actor.frostUntil||0,r.time+2.6);
@@ -2141,6 +2506,22 @@ function spawnBrood(r,boss){
     notify('Кокон вырастил защитные наросты','danger',3);
   }
 }
+function callPhaseGuards(r,boss){
+  const candidates=[[78,96],[84,201],[492,105],[517,194],[426,156]];
+  const kinds=boss.variant===1?['frost','charger']:['ward'];
+  for(const kind of kinds){
+    const slot=candidates.find(([x,y])=>{
+      const point={x,y};
+      return canSpawnEnemy(r,point)&&waypoint(r.layout,entry,point)&&
+        r.enemies.every(enemy=>distance(enemy,point)>28)&&survivors(r).every(actor=>distance(actor,point)>42);
+    });
+    if(!slot) continue;
+    const guard=spawnEnemy(r,[kind,...slot]);
+    guard.value=0;
+    guard.phaseGuard=true;
+    r.enemies.push(guard);
+  }
+}
 function districtBossTurn(r,e,target,dt){
   if(e.variant===2&&!e.broodStarted){
     e.broodStarted=true;
@@ -2149,13 +2530,19 @@ function districtBossTurn(r,e,target,dt){
   if(!target||e.patternUntil>r.time) return;
   if(e.recoveryAt&&r.time>=e.recoveryAt){
     e.recoveryAt=0;
-    e.exposed=1.7;
+    e.exposed=e.variant===1&&e.phaseTwo?1.15:1.7;
   }
-  if(!e.phaseTwo&&e.hp<=e.max*.5){
+  if(!e.phaseTwo&&e.hp<=Math.ceil(e.max/2)){
     e.phaseTwo=true;
     e.cd=Math.min(e.cd,.24);
     e.exposed=0;
     if(e.variant===2) spawnBrood(r,e);
+    if(e.variant===1||e.variant===2) callPhaseGuards(r,e);
+    if(r.difficulty===3){
+      const zones=survivors(r).map(actor=>patternZone({x:actor.x,y:actor.y},26));
+      schedulePattern(r,e,'heat',zones,1.05,.55);
+    }
+    playEffect('bossCall',e.x,bossPitch[e.variant]);
   }
   if(e.exposed>0) return;
   if(e.variant!==2&&distance(e,target)>195){
@@ -2166,11 +2553,20 @@ function districtBossTurn(r,e,target,dt){
   e.attacks=(e.attacks||0)+1;
   if(e.variant===1){
     const y=clamp(target.y,101,H-52);
-    const lanes=e.phaseTwo?[y,y<153?y+50:y-50]:[y];
-    const zones=lanes.map(line=>patternZone({x:W-35,y:line},e.phaseTwo?16:19,{x:35,y:line}));
-    schedulePattern(r,e,'frost',zones,.84,.72);
-    e.recoveryAt=r.time+.84;
-    setBossAction(r,e,'Выброс хладагента',.84,1.95);
+    const back=survivors(r).filter(actor=>actor!==target&&actor!==r.tank)
+      .sort((a,b)=>distance(e,b)-distance(e,a))[0];
+    const flank=clamp(back?.y??(y<153?y+48:y-48),91,H-43);
+    const width=e.phaseTwo?18:16;
+    const lane=line=>patternZone({x:W-35,y:line},width,{x:35,y:line});
+    schedulePattern(r,e,'frost',[lane(y)],.84,e.phaseTwo?.86:.75);
+    if(e.phaseTwo){
+      schedulePattern(r,e,'frost',[lane(flank)],1.38,.82);
+      e.recoveryAt=r.time+1.38;
+      setBossAction(r,e,'Перекрёстный выброс',1.38,1.55);
+    } else {
+      e.recoveryAt=r.time+.84;
+      setBossAction(r,e,'Выброс хладагента',.84,1.72);
+    }
   } else if(e.variant===2){
     const zones=[patternZone({x:target.x,y:target.y},39)];
     if(e.phaseTwo){
@@ -2325,6 +2721,17 @@ function repositionRangedEnemy(r,enemy,target,gap,speed,dt){
   return enemy.moving;
 }
 function enemyTurn(r,e,dt) {
+  const task=r.objective;
+  const role=e.objectiveRole;
+  if(role==='node') return;
+  if(task?.status==='active'&&role==='saboteur'&&e.taunted<=0){
+    stepToward(r,e,task.point,e.speed,dt);
+    return;
+  }
+  if(task?.status==='active'&&role==='mimicFragment'){
+    const node=nearest(task.enemies.filter(node=>node.hp>0),e);
+    if(node&&distance(e,node)>18){stepToward(r,e,node,e.speed,dt);return;}
+  }
   if(e.carrier){
     e.hit=Math.max(0,e.hit-dt);
     e.slow=Math.max(0,e.slow-dt);
@@ -2381,6 +2788,11 @@ function enemyTurn(r,e,dt) {
   if(!h||e.exposed>0) return;
   const d=distance(e,h);
   const speed=e.speed*(e.slow>0?.64:1);
+  const pointTask=e.pointRaider&&activePointTask(r);
+  if(pointTask&&!taunted&&!drone&&d>95&&distance(e,pointTask.point)>22){
+    stepToward(r,e,pointTask.point,speed,dt);
+    return;
+  }
   if(!taunted&&!drone){
     if(['fast','leech','echo'].includes(e.kind)&&tryFlank(r,e,h,d,speed,dt)) return;
     if(e.kind==='ward'&&guardPack(r,e,h,d,speed,dt)) return;
@@ -2566,6 +2978,7 @@ function removeDefeated(r) {
         const fragment=spawnEnemy(r,['echo',point.x,point.y]);
         Object.assign(fragment,{value:0,echoFragment:true,hp:Math.ceil(e.max*.22),max:Math.ceil(e.max*.22),
           damage:Math.max(1,Math.round(e.damage*.47)),cd:.75});
+        if(e.objectiveRole==='mimic') fragment.objectiveRole='mimicFragment';
         r.enemies.push(fragment);
         if(++fragments===2) break;
       }
@@ -2642,7 +3055,7 @@ function advance(r) {
   r.cleared++;
   bankMutagen(r,[2,3,4,5,6][r.missionIndex]*difficulties[r.difficulty-1].reward);
   r.eventPriority=0;
-  if(r.riskySector){
+  if(r.riskySector&&(!r.objective||r.objective.status==='done')){
     const reward=routeReward(r);
     bankMutagen(r,reward);
     r.routeBonus=reward;
@@ -2682,7 +3095,7 @@ function transition(r,dt){
     r.phase='route';
     r.routeRemaining=6;
     get('route-seconds').textContent='6';
-    get('route-risk').textContent='Дополнительный мутант и усиленная охрана. Тайник +'+routeReward(r)+' мутагена за зачистку.';
+    get('route-risk').textContent='Вскрыть защищённый тайник. Дополнительная охрана, награда +'+routeReward(r)+' мутагена за зачистку.';
     get('route-menu').showModal();
     syncTelegramNav();
     return;
@@ -2697,18 +3110,21 @@ function chooseRoute(risk){
   const r=run;
   if(!r||r.paused||r.phase!=='route') return;
   get('route-menu').close();
-  enterNextSector(r,risk);
+  enterNextSector(r,risk,true);
   updateHUD();
   syncTelegramNav();
 }
-function enterNextSector(r,risk=false){
+function enterNextSector(r,risk=false,routeObjective=false){
   r.riskySector=risk;
+  r.routeObjective=routeObjective;
+  const pump=r.missionIndex===1, quarantine=r.missionIndex===2;
   if(r.tank?.hp>0) {
-    const repair=7+state.guard*8;
+    const repair=7+state.guard*(pump?3:quarantine?6:8)+(districtModule(1)?10:0);
     r.tank.hp=Math.min(r.tank.max,r.tank.hp+(r.difficulty===3?Math.floor(repair*.45):repair));
   }
   if(r.missionIndex>0&&r.difficulty<3){
-    const recovery=r.difficulty===1?16:8;
+    const baseline=pump?7:quarantine?13:16;
+    const recovery=r.difficulty===1?baseline:Math.ceil(baseline/2);
     for(const actor of survivors(r)) actor.hp=Math.min(actor.max,actor.hp+recovery);
   }
   if(r.wave===3){r.room++;r.wave=0;}
@@ -2779,7 +3195,7 @@ function tick(dt) {
     for(const actor of r.recruits) if(actor.hp>0) updateRecruit(r,actor,dt);
     removeDefeated(r);
     r.enemies.forEach(enemy=>enemyTurn(r,enemy,dt));
-    separateBodies(r,r.enemies.filter(e=>e.hp>0&&e.kind!=='boss'&&!e.carrier&&!e.broodPod&&!e.aim&&!e.charge&&!(e.patternUntil>r.time)),16,dt);
+    separateBodies(r,r.enemies.filter(e=>e.hp>0&&e.kind!=='boss'&&e.objectiveRole!=='node'&&!e.carrier&&!e.broodPod&&!e.aim&&!e.charge&&!(e.patternUntil>r.time)),16,dt);
     if(r.sectorFeature?.kind==='carrier'&&r.sectorFeature.outcome==='escaped'){
       r.enemies=r.enemies.filter(enemy=>!enemy.escaped);
     }
@@ -2789,6 +3205,8 @@ function tick(dt) {
     removeDefeated(r);
     if(!survivors(r).length){finish(false);return;}
     updateEvacuation(r,dt);
+    updateDistrictObjective(r,dt);
+    if(!survivors(r).length){finish(false);return;}
     separateBodies(r,survivors(r),22,dt);
     gatherMutagen(r,dt);
     if(r.pendingReinforcement){
@@ -2813,7 +3231,8 @@ function updateHUD() {
   if(progress.textContent!==sector) progress.textContent=sector;
   const lootToast=get('loot-toast');
   const rewardMessage=r.bossLootDrop?.toastUntil>r.time?'Получено · '+r.mission.reward:
-    r.routeToastUntil>r.time?'Найден тайник · +'+r.routeBonus+' мутагена':'';
+    r.routeToastUntil>r.time?'Найден тайник · +'+r.routeBonus+' мутагена':
+    r.objective?.noticeUntil>r.time?r.objective.profile.name:'';
   if(rewardMessage&&lootToast.textContent!==rewardMessage) lootToast.textContent=rewardMessage;
   lootToast.hidden=!rewardMessage;
   const health=roster(r).map(actor=>heroData[actorRole(r,actor)].name+' '+combatPoints(actor.hp)+'/'+combatPoints(actor.max)).join(', ');
@@ -2917,6 +3336,7 @@ function paintCover(o,tint){
   }
 }
 function paintActor(e,r){
+  if(drawObjectiveEnemy(e)) return;
   const isHero=e===r.h;
   const tank=e===r.tank;
   const boss=e.kind==='boss';
@@ -3382,7 +3802,7 @@ function paintArenaFloor(decor,tint){
   ctx.restore();
 }
 function paintEvacDrone(r){
-  const drone=r.sectorFeature?.drone;
+  const drone=r.objective?.drone||r.sectorFeature?.drone;
   if(!drone||drone.status==='safe') return;
   const {x,y}=drone;
   const rolling=drone.moving&&drone.status==='moving'&&Math.floor(r.time*12)%2===1;
@@ -3490,6 +3910,7 @@ function paintArena(r) {
   else paintSectorDecor(r.sectorLayout.decor,theme);
   for(const capsule of r.capsules) paintCapsule(capsule,r);
   paintSectorHazard(r);
+  drawDistrictObjective(r);
   paintBulkhead(entry.x,entry.y,theme,r.phase==='enter');
   paintBulkhead(exit.x,exit.y,r.phase==='exit'?'#a9f1a1':theme,r.phase==='exit');
   paintPatterns(r);
@@ -3623,7 +4044,9 @@ function finish(won,retreated=false) {
   const newMission=won&&next===state.missionUnlocked&&next<missionData.length;
   const newDifficulty=won&&r.difficulty===highestDifficulty(r.missionIndex)&&r.difficulty<difficulties.length;
   const finalVictory=won&&r.missionIndex===missionData.length-1;
+  const newModule=won&&r.difficulty>=2&&!districtModule(r.missionIndex);
   if(won) {
+    if(newModule) (state.districtModules??={})[r.missionIndex]=true;
     (state.victories??=[])[r.missionIndex]=true;
     grantBossLoot(r.missionIndex);
     if(newMission) state.missionUnlocked++;
@@ -3647,6 +4070,10 @@ function finish(won,retreated=false) {
     +stat(formatTime(Math.ceil(r.time)),'Время');
   const reward=newLoot?'<div class="card reward"><strong>'+r.mission.reward+'</strong><p>'+r.mission.effect+
     '</p></div>':'';
+  const module=districtModules[r.missionIndex];
+  const moduleReport=newModule?'<div class="card reward"><strong>Модуль · '+module.name+'</strong><p>'+module.effect+'</p></div>':'';
+  const tasks=r.objectiveTotals;
+  const taskReport=tasks.done||tasks.failed?'<p>Задачи · '+tasks.done+' из '+(tasks.done+tasks.failed)+' · +'+tasks.reward+' мутагена</p>':'';
   const epilogue=finalVictory?'<div class="card reward"><strong>Все районы освобождены</strong><p>Экипаж вернулся к «Касатке».</p></div>':'';
   const unlock=(newMission?'<li>Открыта миссия «'+missionData[next].name+'»</li>':'')
     +(newDifficulty?'<li>Открыта сложность «'+difficultyName(r.difficulty+1)+'»</li>':'');
@@ -3663,7 +4090,7 @@ function finish(won,retreated=false) {
   const hangarButton='<button data-close'+(won?' class="primary"':'')+'>В ангар</button>';
   show(title,'<div class="report-content"><div class="report-summary"><p>'+r.mission.name+' · '+difficultyName(r.difficulty)+
     '</p><dl class="report-stats">'+statList+'</dl>'+(record&&record!=='Район зачищен'?'<p>'+record+'</p>':'')+
-    '</div><div class="report-rewards">'+epilogue+reward+(unlock?'<ul class="report-unlocks">'+unlock+'</ul>':'')+
+    '</div><div class="report-rewards">'+epilogue+reward+moduleReport+taskReport+(unlock?'<ul class="report-unlocks">'+unlock+'</ul>':'')+
     ' <details class="report-more"><summary>Подробности боя</summary><p>Получено урона: '+combatPoints(r.damageTaken)+
     ' · Уклонения: '+r.dodges+'</p>'+setback+tankReport+routeReport+evacReport+fieldReport+'</details></div></div>'+
     '<div class="report-actions">'+replay+hangarButton+'</div>');
@@ -3923,8 +4350,10 @@ function selectMission(index=selectedMission){
     '</p><label for="difficulty">Сложность</label><select id="difficulty">'+options+'</select><p id="difficulty-description"></p>'+
     '<p class="lineup">Отряд · '+team+'</p><button class="primary" data-launch>Начать вылазку</button></div>');
   const describe=()=>{
-    const profile=difficulties[selectedDifficulty-1];
-    get('difficulty-description').textContent=(mission.rooms*3)+' секторов · Мутаген ×'+profile.reward+' · '+profile.description;
+    const objective=objectiveProfiles[districtObjectives[index]];
+    const special=selectedDifficulty>1?' · Особый враг: '+objective.special:'';
+    const module=selectedDifficulty>1?' · Модуль: '+districtModules[index].name:'';
+    get('difficulty-description').textContent=(mission.rooms*3)+' секторов · '+objective.name+special+module;
   };
   get('difficulty').addEventListener('change',event=>{selectedDifficulty=Number(event.target.value);describe();});
   describe();
@@ -3981,10 +4410,102 @@ function showHeroProfile(role){
     '</dl><div class="card"><strong>'+hero.ability+'</strong><p>'+hero.detail+'</p><small>'+heroSkillNotes[role]()+' · Перезарядка '+
     statNumber.format(heroCooldowns[role]())+' с</small></div></div>');
 }
+const slotStakes=[20,100,200];
+const slotOutcomes=[
+  {chance:53,multiplier:0,symbol:'▱',label:'Пусто'},
+  {chance:22,multiplier:1,symbol:'◇',label:'Возврат ставки'},
+  {chance:12,multiplier:2,symbol:'◆',label:'Выигрыш ×2'},
+  {chance:8,multiplier:3,symbol:'✦',label:'Выигрыш ×3'},
+  {chance:1,multiplier:15,symbol:'✷',label:'Джекпот ×15'},
+  {chance:4,multiplier:0,symbol:'☠',label:'Обнуление таланта',reset:true}
+];
+let slotStake=slotStakes[0];
+
+function paintSlotCabinet(canvas){
+  const c=canvas.getContext('2d');
+  c.clearRect(0,0,48,64);
+  const rectangles=[
+    [5,60,38,3,'#0b1420'], [6,57,37,3,'#162637'],
+    [9,9,30,50,'#101824'], [7,13,34,42,'#101824'],
+    [12,4,24,6,'#101824'], [15,2,18,3,'#101824'],
+    [10,11,28,45,'#33475b'], [12,9,24,44,'#3d5865'],
+    [14,5,20,7,'#557981'], [16,4,16,2,'#8fb1b2'],
+    [10,13,3,34,'#6b9098'], [34,13,4,40,'#203346'],
+    [14,13,20,19,'#172833'], [15,14,18,4,'#263b48'],
+    [16,15,16,2,'#80edc2'], [18,14,12,1,'#a7fff1'],
+    [14,19,20,11,'#0e1626'], [15,20,18,9,'#735487'],
+    [16,21,5,7,'#b8f2d7'], [22,21,4,7,'#a9e2c9'], [27,21,5,7,'#b8f2d7'],
+    [17,23,3,3,'#594b80'], [23,23,2,3,'#594b80'], [28,23,3,3,'#594b80'],
+    [14,31,20,4,'#698293'], [13,35,21,5,'#1f3044'],
+    [16,35,9,2,'#7ccdc0'], [27,35,4,2,'#f2bc73'],
+    [15,40,17,11,'#192b3b'], [16,41,15,1,'#53717c'],
+    [17,44,13,5,'#0e192a'], [19,45,3,2,'#428677'], [23,45,4,2,'#83d6ad'],
+    [12,52,23,4,'#283b4a'], [13,53,22,1,'#68818a'],
+    [11,56,7,3,'#405560'], [30,56,7,3,'#405560'],
+    [5,19,4,12,'#253347'], [6,20,2,7,'#89ad9d'],
+    [39,25,3,14,'#364f55'], [40,27,1,10,'#aeceb5'],
+    [41,22,4,6,'#182a39'], [42,22,2,4,'#dd9c6d'], [42,22,2,1,'#ffd392'],
+    [11,15,2,2,'#d1dcc0'], [33,13,2,2,'#8cf3ca'],
+    [10,39,2,4,'#b4dbbf'], [35,42,2,4,'#8fa3b1'],
+  ];
+  for(const [x,y,width,height,color] of rectangles) fill(c,x,y,width,height,color);
+}
+
+function showHangarSlot(result, symbols=['•','•','•']){
+  panel='slot';
+  const options=slotStakes.map(stake=>'<option value="'+stake+'"'+(stake===slotStake?' selected':'')+'>'+stake+'</option>').join('');
+  const odds=slotOutcomes.map(outcome=>'<li><span aria-hidden="true">'+outcome.symbol+'</span> '+
+    outcome.label+' <strong>'+outcome.chance+'%</strong></li>').join('');
+  const reels=symbols.map(symbol=>'<span>'+symbol+'</span>').join('');
+  const message=result||'Баланс: '+state.mutagen+' мутагена';
+  show('Чужой арсенал','<div class="slot-display"><canvas class="slot-portrait" id="slot-portrait" width="48" height="64" aria-hidden="true"></canvas>'+
+    '<div class="slot-reels" aria-hidden="true">'+reels+'</div></div>'+
+    '<div class="slot-message" role="status">'+message+'</div>'+
+    '<div class="slot-controls"><label for="slot-stake">Ставка</label><select id="slot-stake">'+options+'</select>'+
+    '<button type="button" class="primary" data-spin-slot'+(state.mutagen<slotStake?' disabled':'')+'>Крутить</button></div>'+
+    '<details class="slot-odds"><summary>Выплаты и шансы</summary><ul>'+odds+'</ul>'+
+    '<p>Множитель указывает общую выплату с учётом ставки. Символ ☠ обнуляет все ранги одного случайного купленного таланта.</p></details>');
+  paintSlotCabinet(get('slot-portrait'));
+  get('slot-stake').addEventListener('change',event=>{
+    const amount=Number(event.target.value);
+    if(!slotStakes.includes(amount)) return;
+    slotStake=amount;
+    const button=get('dialog-body').querySelector('[data-spin-slot]');
+    if(button) button.disabled=state.mutagen<slotStake;
+  });
+}
+
+function spinHangarSlot(random=Math.random){
+  if(run||panel!=='slot'||!get('dialog').open||!slotStakes.includes(slotStake)||state.mutagen<slotStake) return;
+  let roll=random()*100;
+  const outcome=slotOutcomes.find(({chance})=>(roll-=chance)<0);
+  const spent=state.mutagen-slotStake;
+  const payout=Math.min(slotStake*outcome.multiplier,Number.MAX_SAFE_INTEGER-spent);
+  const balance=spent+payout;
+  let result=outcome.label+(payout?' · +'+payout+' мутагена':'');
+  if(outcome.reset){
+    const purchased=Object.keys(upgrades).filter(key=>rank(key)>0);
+    if(purchased.length){
+      const key=purchased[Math.floor(random()*purchased.length)];
+      state[key]=0;
+      result='Обнулён талант «'+upgrades[key].name+'»';
+    } else result='Талантов для обнуления пока нет';
+  }
+  state.mutagen=balance;
+  save();
+  const symbols=outcome.multiplier||outcome.reset
+    ?[outcome.symbol,outcome.symbol,outcome.symbol]:['▱','◇','▱'];
+  showHangarSlot(result+' · Баланс: '+balance,symbols);
+  const button=get('dialog-body').querySelector('[data-spin-slot]');
+  if(button&&!button.disabled) button.focus({preventScroll:true});
+  else get('slot-stake').focus({preventScroll:true});
+}
+
 function showPanel(name){
   panel=name;
   if(name==='tech') showTree();
   if(name==='gear') showLocker();
+  if(name==='slot') showHangarSlot();
   if(name==='map') selectMission();
   if(name==='settings'){
     show('Настройки',volumeControls('settings'));
@@ -4377,6 +4898,7 @@ document.addEventListener('click',event=>{
   if(button.dataset.route) chooseRoute(button.dataset.route==='risk');
   if(button.dataset.field) chooseFieldMod(button.dataset.field);
   if(button.dataset.panel) showPanel(button.dataset.panel);
+  if(button.hasAttribute('data-spin-slot')) spinHangarSlot();
   if(button.dataset.profile) showHeroProfile(button.dataset.profile);
   if(button.dataset.node) {
     selectedNode=button.dataset.node;
@@ -4455,6 +4977,7 @@ save();
 renderHangarCrew();
 get('pause-volume').innerHTML=volumeControls('pause');
 paintHangar();
+paintSlotCabinet(get('hangar-slot-art'));
 startClientIntegration();
 requestAnimationFrame(frame);
 </script>
